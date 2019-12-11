@@ -1,11 +1,14 @@
 import { Client } from 'boardgame.io/react';
+import { StrategoBoard } from "./board";
 
 const Stratego = {
   setup: () => ({ 
     help: "Los! Wähle eine Figur deiner Armee.",
     figur: null,
     schlacht,
-    armeen: [armeeGelb, armeeBlau]
+    armeen: [armeeRot, armeeBlau],
+    kampf: Array(2).fill(null),
+    anzahlFiguren: [1,4,3,1] //index=rang, wert=anzahl 
   }),
 
   moves: {
@@ -17,41 +20,47 @@ const Stratego = {
     },
     clickArmee: (G, ctx, id) => {
       G.help = "Armee " + ctx.currentPlayer;
-      if (G.figur) {
-        G.help = "Zuerst Figur " + G.figur + " auf Schlachtfeld aufstellen";
-      } else {
+      //if (G.figur) {
+      //  G.help = "Zuerst Figur " + G.figur + " auf Schlachtfeld aufstellen";
+      //} else {
         var armee = G.armeen[ctx.playOrderPos];
-        G.help = "Armee " + armee.farbe + " macht mobil: " + id;
+        G.help = id + " Armee " + armee.farbe + " macht mobil!";
         G.figur = armee.macheMobil(id);
-      }
+      //}
     },
+  },
+  endIf: (G, ctx) => {
+    if (IsVictory(G.kampf)) {
+      return { winner: ctx.currentPlayer };
+    }
+    // todo if (IsDraw(G.cells)) {}
   },
 };
 
-const App = Client({ game: Stratego });
+const App = Client({ game: Stratego, board: StrategoBoard });
 
 export default App;
 
 // Figuren
-var flaggeGelb = {typ:"flagge", armee:"gelb", rang:0};
+var flaggeRot = {typ:"flagge", armee:"rot", rang:0};
 var flaggeBlau = {typ:"flagge", armee:"blau", rang:0};
 
-const anzahlSoldaten = 4;
-var soldatenGelb = Array(anzahlSoldaten);
+const anzahlSoldaten = 4; //anzahlFiguren[1]
+var soldatenRot = Array(anzahlSoldaten);
 var soldatenBlau = Array(anzahlSoldaten);
 
 for (var i=anzahlSoldaten; i>0; i--) {
-  var soldatGelb = {typ:"soldat", armee:"gelb", rang:1};
-  soldatenGelb[i-1] = soldatGelb;
+  var soldatRot = {typ:"soldat", armee:"rot", rang:1};
+  soldatenRot[i-1] = soldatRot;
   var soldatBlau = {typ:"soldat", armee:"blau", rang:1};
   soldatenBlau[i-1] = soldatBlau;
 }
-var armeeGelb = {farbe: "gelb", flagge: flaggeGelb, soldaten: soldatenGelb, macheMobil: function(rang) {
-    return holeFigur(this,rang);
+var armeeRot = {farbe: "rot", flagge: flaggeRot, soldaten: soldatenRot, macheMobil: function(rang) {
+    return holeFigurVonArmee(this,rang);
   }
 };
 var armeeBlau = {farbe: "blau", flagge: flaggeBlau, soldaten: soldatenBlau, macheMobil: function(rang) {
-    return holeFigur(this,rang);
+    return holeFigurVonArmee(this,rang);
   }
 };
 
@@ -62,19 +71,39 @@ var schlacht = {
   reihe3: Array(4).fill(null),
   reihe4: Array(4).fill(null),
   stelleAuf: function(figur, platz) {
-    if (platz < 4) this.reihe1[platz] = figur;
+    if (platz < 4) this.reihe1[platz] = figur; //FIXME Schlachtfeldgrösse
+    else if (platz < 8) this.reihe2[platz] = figur;
+    else if (platz < 12) this.reihe3[platz] = figur;
+    else if (platz < 16) this.reihe4[platz] = figur;
+  },
+  holeFigur: function(platz) {
+    var f = null; // FIXME schlachtfeldgrösse
+    if (platz < 4) f = this.reihe1[platz];
+    else if (platz < 8) f = this.reihe2[platz];
+    else if (platz < 12) f = this.reihe3[platz];
+    else if (platz < 16) f = this.reihe4[platz];
+    return f;
   }
 };
 
-function holeFigur(armee, rang) {
-  if (rang === 0) {
+function holeFigurVonArmee(armee, rang) {
+  if (rang == 0) {
     var f = armee.flagge; // this!
-    armee.flagge = null;
+    //armee.flagge = null; erst beim platzier1en
     return f;
   }
-  else {
+  else if (rang == 1) {
     var s = armee.soldaten[armee.soldaten.length-1];
-    armee.soldaten[armee.soldaten.length-1] = null;
+    //armee.soldaten[armee.soldaten.length-1] = null;
     return s;
-  }
+  } else return null;
+}
+
+function IsVictory(kampf) {
+  if (kampf[0] === null) return;
+  if (kampf[1] === null) return;
+  
+  // Flagge ist im Kampf 
+  if (kampf[0].rang === 0) return true;
+  if (kampf[1].rang === 0) return true;
 }
