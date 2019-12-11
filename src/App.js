@@ -72,17 +72,19 @@ var schlacht = {
   reihe4: Array(4).fill(null),
   stelleAuf: function(figur, platz) {
     if (platz < 4) this.reihe1[platz] = figur; //FIXME Schlachtfeldgrösse
-    else if (platz < 8) this.reihe2[platz] = figur;
-    else if (platz < 12) this.reihe3[platz] = figur;
-    else if (platz < 16) this.reihe4[platz] = figur;
+    else if (platz < 8) this.reihe2[platz-4] = figur;
+    else if (platz < 12) this.reihe3[platz-8] = figur;
+    else if (platz < 16) this.reihe4[platz-12] = figur;
   },
   holeFigur: function(platz) {
     var f = null; // FIXME schlachtfeldgrösse
     if (platz < 4) f = this.reihe1[platz];
-    else if (platz < 8) f = this.reihe2[platz];
-    else if (platz < 12) f = this.reihe3[platz];
-    else if (platz < 16) f = this.reihe4[platz];
+    else if (platz < 8) f = this.reihe2[platz-4];
+    else if (platz < 12) f = this.reihe3[platz-8];
+    else if (platz < 16) f = this.reihe4[platz-12];
     return f;
+  }, dim: function() {
+    return 4;
   }
 };
 
