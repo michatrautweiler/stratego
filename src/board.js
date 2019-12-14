@@ -78,14 +78,19 @@ export class StrategoBoard extends React.Component {
     // deine Armee 
     //
     let deck = [];
-    let rows = Math.max(...this.props.G.anzahlFiguren);
-    let cols = this.props.G.anzahlFiguren.length;
+    let rows = 0;
+    let cols = this.props.G.armeen[this.props.ctx.currentPlayer].gattungen().length;
+    
+    for (let k=0; k < cols; k++) {
+      var t = this.props.G.armeen[this.props.ctx.currentPlayer].mannStaerke(k);
+      if (t > rows) rows = t;
+    }
     for (let i = 0; i < rows; i++) {
       let stack = [];
       for (let j = 0; j < cols; j++) {
-        if (this.props.G.anzahlFiguren[j] > i) {
+        if (this.props.G.armeen[this.props.ctx.currentPlayer].mannStaerke(j) > i) {
         const id = size * size + size * i + j;
-        let png = "./figur" + j + "rot.png"; // cwd is folder public
+        let png = "./figur" + j + "rot.png";
           stack.push(
             <td
               key={id} class="deck"

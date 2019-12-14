@@ -7,14 +7,16 @@ const Stratego = {
     figur: null,
     schlacht,
     armeen: [armeeRot, armeeBlau],
-    kampf: Array(2).fill(null),
-    anzahlFiguren: [1,4,3,1] //index=rang, wert=anzahl 
+    kampf: Array(2).fill(null)
   }),
 
   moves: {
     clickBoard: (G, ctx, id) => {
       if (G.figur) {
         G.schlacht.stelleAuf(G.figur, id);
+        // TODO: Figur aus Armee entfernen
+        var armee = G.armeen[ctx.currentPlayer];
+        armee.entferne(G.figur.rang);
         G.figur = null;
       }
     },
@@ -41,65 +43,84 @@ const App = Client({ game: Stratego, board: StrategoBoard });
 
 export default App;
 
-// Figuren
-var flaggeRot = {typ:"flagge", armee:"rot", rang:0};
-var flaggeBlau = {typ:"flagge", armee:"blau", rang:0};
+const anzahlSoldaten = 4;
+const feldGroesse = 4;
 
-const anzahlSoldaten = 4; //anzahlFiguren[1]
-var soldatenRot = Array(anzahlSoldaten);
-var soldatenBlau = Array(anzahlSoldaten);
 
-for (var i=anzahlSoldaten; i>0; i--) {
-  var soldatRot = {typ:"soldat", armee:"rot", rang:1};
-  soldatenRot[i-1] = soldatRot;
-  var soldatBlau = {typ:"soldat", armee:"blau", rang:1};
-  soldatenBlau[i-1] = soldatBlau;
+var armeeRot = new Armee("rot");
+var armeeBlau = new Armee("blau");
+
+
+// Figur
+function Figur(typ,farbe,rang) {
+  this.typ = typ;
+  this.farbe = farbe;
+  this.rang = rang;
 }
-var armeeRot = {farbe: "rot", flagge: flaggeRot, soldaten: soldatenRot, macheMobil: function(rang) {
-    return holeFigurVonArmee(this,rang);
+
+// Armee
+function Armee(farbe) {
+  this.farbe = farbe;
+  this.flagge = new Figur("flagge",farbe,0);
+  this.soldaten = new Array(anzahlSoldaten);
+  for (var i=anzahlSoldaten; i>0; i--) {
+    var soldat = new Figur("soldat",farbe,1);
+    this.soldaten[i-1] = soldat;
   }
-};
-var armeeBlau = {farbe: "blau", flagge: flaggeBlau, soldaten: soldatenBlau, macheMobil: function(rang) {
-    return holeFigurVonArmee(this,rang);
+}
+  
+
+Armee.prototype.macheMobil = function(rang) {
+  if (rang == 0) {
+    return this.flagge;
   }
-};
+  else if (rang == 1) {
+    return this.soldaten[this.soldaten.length-1];  
+  } else return null;
+}
+Armee.prototype.entferne = function(rang) {
+  if (rang == 0) this.flagge = null;
+  else if (rang == 1) this.soldaten.pop();
+  else {}
+}
+Armee.prototype.mannStaerke = function(rang) {
+  if (rang == 0) {
+    if (this.flagge === null) return 0; else return 1;
+  }
+  else if (rang == 1) {
+    return this.soldaten.length;
+  }
+  else return 0;
+}
+Armee.prototype.gattungen = function() {
+  return ["flagge","soldaten"];
+}
+
 
 // Spielbrett
 var schlacht = {
-  reihe1: Array(4).fill(null),
-  reihe2: Array(4).fill(null),
-  reihe3: Array(4).fill(null),
-  reihe4: Array(4).fill(null),
+  reihe1: Array(feldGroesse).fill(null),
+  reihe2: Array(feldGroesse).fill(null),
+  reihe3: Array(feldGroesse).fill(null),
+  reihe4: Array(feldGroesse).fill(null),
   stelleAuf: function(figur, platz) {
-    if (platz < 4) this.reihe1[platz] = figur; //FIXME Schlachtfeldgrösse
-    else if (platz < 8) this.reihe2[platz-4] = figur;
-    else if (platz < 12) this.reihe3[platz-8] = figur;
-    else if (platz < 16) this.reihe4[platz-12] = figur;
+    if (platz < feldGroesse) this.reihe1[platz] = figur; //FIXME Schlachtfeldgrösse
+    else if (platz < 2*feldGroesse) this.reihe2[platz-feldGroesse] = figur;
+    else if (platz < 3*feldGroesse) this.reihe3[platz-2*feldGroesse] = figur;
+    else if (platz < 4*feldGroesse) this.reihe4[platz-3*feldGroesse] = figur;
   },
   holeFigur: function(platz) {
     var f = null; // FIXME schlachtfeldgrösse
-    if (platz < 4) f = this.reihe1[platz];
-    else if (platz < 8) f = this.reihe2[platz-4];
-    else if (platz < 12) f = this.reihe3[platz-8];
-    else if (platz < 16) f = this.reihe4[platz-12];
+    if (platz < feldGroesse) f = this.reihe1[platz];
+    else if (platz < 2*feldGroesse) f = this.reihe2[platz-feldGroesse];
+    else if (platz < 3*feldGroesse) f = this.reihe3[platz-2*feldGroesse];
+    else if (platz < 4*feldGroesse) f = this.reihe4[platz-3*feldGroesse];
     return f;
   }, dim: function() {
-    return 4;
+    return feldGroesse;
   }
 };
 
-function holeFigurVonArmee(armee, rang) {
-  if (rang == 0) {
-    var f = armee.flagge; // this!
-    //armee.flagge = null; erst beim platzier1en
-    return f;
-  }
-  else if (rang == 1) {
-    var s = armee.soldaten[armee.soldaten.length-1];
-    //armee.soldaten[armee.soldaten.length-1] = null;
-    return s;
-  } else return null;
-}
 
 function IsVictory(kampf) {
   if (kampf[0] === null) return;
