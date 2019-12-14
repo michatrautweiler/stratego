@@ -44,7 +44,7 @@ export class StrategoBoard extends React.Component {
     // Schlachtfeld
     //
     let tbody = [];
-    let size = 4;
+    let size = this.props.G.schlacht.feldGroesse;
     for (let i = 0; i < size; i++) {
       let cells = [];
       for (let j = 0; j < size; j++) {

@@ -5,7 +5,7 @@ const Stratego = {
   setup: () => ({ 
     help: "Los! Wähle eine Figur deiner Armee.",
     figur: null,
-    schlacht,
+    schlacht: new Schlachtfeld(4),
     armeen: [armeeRot, armeeBlau],
     kampf: Array(2).fill(null)
   }),
@@ -44,7 +44,6 @@ const App = Client({ game: Stratego, board: StrategoBoard });
 export default App;
 
 const anzahlSoldaten = 4;
-const feldGroesse = 4;
 
 
 var armeeRot = new Armee("rot");
@@ -98,28 +97,18 @@ Armee.prototype.gattungen = function() {
 
 
 // Spielbrett
-var schlacht = {
-  reihe1: Array(feldGroesse).fill(null),
-  reihe2: Array(feldGroesse).fill(null),
-  reihe3: Array(feldGroesse).fill(null),
-  reihe4: Array(feldGroesse).fill(null),
-  stelleAuf: function(figur, platz) {
-    if (platz < feldGroesse) this.reihe1[platz] = figur; //FIXME Schlachtfeldgrösse
-    else if (platz < 2*feldGroesse) this.reihe2[platz-feldGroesse] = figur;
-    else if (platz < 3*feldGroesse) this.reihe3[platz-2*feldGroesse] = figur;
-    else if (platz < 4*feldGroesse) this.reihe4[platz-3*feldGroesse] = figur;
-  },
-  holeFigur: function(platz) {
-    var f = null; // FIXME schlachtfeldgrösse
-    if (platz < feldGroesse) f = this.reihe1[platz];
-    else if (platz < 2*feldGroesse) f = this.reihe2[platz-feldGroesse];
-    else if (platz < 3*feldGroesse) f = this.reihe3[platz-2*feldGroesse];
-    else if (platz < 4*feldGroesse) f = this.reihe4[platz-3*feldGroesse];
-    return f;
-  }, dim: function() {
-    return feldGroesse;
-  }
+function Schlachtfeld(dim) {
+  this.feldGroesse = dim;
+  this.feld = new Array(dim * dim).fill(null);
+}
+Schlachtfeld.prototype.stelleAuf = function(figur, platz) {
+  this.feld[platz] = figur;
 };
+Schlachtfeld.prototype.holeFigur = function(platz) {   
+  return this.feld[platz];
+};
+
+
 
 
 function IsVictory(kampf) {
