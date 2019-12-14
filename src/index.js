@@ -1,8 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import { Client } from 'boardgame.io/react';
+import { Local } from 'boardgame.io/multiplayer';
+import { Stratego}  from './App';
+import { StrategoBoard } from "./board";
 import * as serviceWorker from './serviceWorker';
+
+// single player
+const StrategoClient = Client({ game: Stratego, board: StrategoBoard, multiplayer: Local() });
+
+// multi player, local
+/*
+const gameClient = Client({
+  game: Stratego,
+  board: StrategoBoard,
+//  multiplayer: Local()
+});
+*/
+const App = () => (
+  <table><tr><td>
+    <StrategoClient playerID="0" />
+    </td><td>
+    <StrategoClient playerID="1" />
+    </td></tr>
+  </table>
+);
+
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

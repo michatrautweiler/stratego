@@ -1,54 +1,81 @@
-import { Client } from 'boardgame.io/react';
-import { StrategoBoard } from "./board";
-
-const Stratego = {
+export const Stratego = {
   setup: () => ({ 
     help: "Los! Wähle eine Figur deiner Armee.",
-    figur: null,
+    figur: Array(2).fill(null),
     schlacht: new Schlachtfeld(4),
-    armeen: [armeeRot, armeeBlau],
+    armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
   }),
-
-  moves: {
-    clickBoard: (G, ctx, id) => {
-      if (G.figur) {
-        G.schlacht.stelleAuf(G.figur, id);
-        // TODO: Figur aus Armee entfernen
-        var armee = G.armeen[ctx.currentPlayer];
-        armee.entferne(G.figur.rang);
-        G.figur = null;
-      }
-    },
-    clickArmee: (G, ctx, id) => {
-      G.help = "Armee " + ctx.currentPlayer;
-      //if (G.figur) {
-      //  G.help = "Zuerst Figur " + G.figur + " auf Schlachtfeld aufstellen";
-      //} else {
-        var armee = G.armeen[ctx.playOrderPos];
-        G.help = id + " Armee " + armee.farbe + " macht mobil!";
-        G.figur = armee.macheMobil(id);
-      //}
-    },
+  
+  phases: {
+    Aufstellen: { moves: { clickBoard, clickArmee, bereitZurSchlacht}, start: true, next: 'Schlacht'},
+    Schlacht: { moves: bewegen, schlagen, aufgeben, onBegin: (G,ctx) => {G.armeen = [armeeRot, armeeGelb]} }
   },
+  
   endIf: (G, ctx) => {
-    if (IsVictory(G.kampf)) {
+    if (G.armeen[0] === null) {
+      return {winner: 0};
+    } else if (G.armeen[1] === null) {
+      return {winner: 1};
+    }
+    else if (IsVictory(G.kampf)) {
       return { winner: ctx.currentPlayer };
     }
     // todo if (IsDraw(G.cells)) {}
-  },
+  }
 };
 
-const App = Client({ game: Stratego, board: StrategoBoard });
+// moves
+/*function platzieren(G, ctx, id) {
+  clickArmee(G, ctx, id);
+  clickBoard(G, ctx, id);
+}*/
+function clickBoard(G, ctx, feldId, player) {
+      var schonDa = G.schlacht.holeFigur(feldId); //TODO: handle occupied fields
+      var willHin = G.figur[player];
+      if (willHin) {
+        G.schlacht.stelleAuf(willHin, feldId);        
+        if (willHin.farbe === "rot") {
+          reserveRot.entferne(willHin.rang);
+          armeeRot.platziere(willHin, feldId);
+        } else {
+          reserveGelb.entferne(willHin.rang);
+          armeeGelb.platziere(willHin, feldId);        
+        }
+        G.figur[player] = null;
+      }
+    }
+function clickArmee(G, ctx, rang, player) {
+  G.help = rang + " Armee " + G.armeen[player].farbe + " macht mobil";
+  G.figur[player] = G.armeen[player].macheMobil(rang);
+}
 
-export default App;
+function bereitZurSchlacht(G, ctx) { 
+  delete G.armeen[ctx.currentPlayer];
+  ctx.endTurn();
+}
 
+function bewegen(G, ctx) {
+
+}
+
+function schlagen(G, ctx) {
+
+}
+
+function aufgeben(G, ctx) {
+  G.help = G.armeen[ctx.currentPlayer] + " gibt auf!";
+  G.armeen[ctx.currentPlayer] = null;
+  ctx.endTurn();
+}
+
+// main
 const anzahlSoldaten = 4;
 
-
+var reserveRot = new Armee("rot");
+var reserveGelb = new Armee("gelb");
 var armeeRot = new Armee("rot");
-var armeeBlau = new Armee("blau");
-
+var armeeGelb = new Armee("gelb");
 
 // Figur
 function Figur(typ,farbe,rang) {
@@ -94,7 +121,14 @@ Armee.prototype.mannStaerke = function(rang) {
 Armee.prototype.gattungen = function() {
   return ["flagge","soldaten"];
 }
-
+Armee.prototype.platziere = function(figur, id) {
+  if (figur.rang == 0) {
+    this.flagge = figur;
+  }
+  else if (figur.rang == 1) {
+    this.soldaten.push(figur);
+  }
+}
 
 // Spielbrett
 function Schlachtfeld(dim) {
@@ -110,7 +144,7 @@ Schlachtfeld.prototype.holeFigur = function(platz) {
 
 
 
-
+// game rules
 function IsVictory(kampf) {
   if (kampf[0] === null) return;
   if (kampf[1] === null) return;

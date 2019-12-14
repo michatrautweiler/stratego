@@ -20,15 +20,12 @@ export class StrategoBoard extends React.Component {
     isMultiplayer: PropTypes.bool,
   };
 
-  onClick = id => {
+  onClick = (id,rang) => {
     //if (this.isActive(id)) {
-      if (isNaN(id)) {
-        let rang = id.substring(7,8);
-        this.props.moves.clickArmee(rang);
+      if (isNaN(rang)) {
+        this.props.moves.clickBoard(id, this.props.playerID);
       } else {
-        // update model
-        this.props.moves.clickBoard(id);
-        // update UI
+        this.props.moves.clickArmee(rang, this.props.playerID);
       }
     //}
   };
@@ -48,25 +45,25 @@ export class StrategoBoard extends React.Component {
     for (let i = 0; i < size; i++) {
       let cells = [];
       for (let j = 0; j < size; j++) {
-        const id = size * i + j;
-        let f = this.props.G.schlacht.holeFigur(id);
+        const feldId = size * i + j;
+        let f = this.props.G.schlacht.holeFigur(feldId);
         if (f) {
-          let png = "./figur" + f.rang + "rot.png"; // cwd is folder public
+          let png = "./figur" + f.rang + f.farbe + ".svg"; // cwd is folder public
           cells.push(
             <td
-              key={id}
+              key={feldId}
               class="active"
-              onClick={() => this.onClick(id)}
+              onClick={() => this.onClick(feldId, null)}
             >
-              <img src={png} width="64" height="64" alt={png}/>
+              <img src={png} width="48" height="64" alt={png}/>
             </td>
           );
           
         } else {
           cells.push(
             <td
-              key={id}
-              onClick={() => this.onClick(id)}
+              key={feldId}
+              onClick={() => this.onClick(feldId)}
             >
             </td>
           );
@@ -77,27 +74,28 @@ export class StrategoBoard extends React.Component {
     //
     // deine Armee 
     //
+    let farbe = this.props.G.armeen[this.props.playerID].farbe;
     let deck = [];
     let rows = 0;
-    let cols = this.props.G.armeen[this.props.ctx.currentPlayer].gattungen().length;
+    let cols = this.props.G.armeen[this.props.playerID].gattungen().length;
     
     for (let k=0; k < cols; k++) {
-      var t = this.props.G.armeen[this.props.ctx.currentPlayer].mannStaerke(k);
+      var t = this.props.G.armeen[this.props.playerID].mannStaerke(k);
       if (t > rows) rows = t;
     }
     for (let i = 0; i < rows; i++) {
       let stack = [];
-      for (let j = 0; j < cols; j++) {
-        if (this.props.G.armeen[this.props.ctx.currentPlayer].mannStaerke(j) > i) {
-        const id = size * size + size * i + j;
-        let png = "./figur" + j + "rot.png";
+      for (let rang = 0; rang < cols; rang++) {
+        if (this.props.G.armeen[this.props.playerID].mannStaerke(rang) > i) {
+        const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
+        let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
           stack.push(
             <td
-              key={id} class="deck"
+              key={deckId} class="deck"
               //className={i===0 ? 'active' : ''}
-              onClick={() => this.onClick(png)}
+              onClick={() => this.onClick(deckId, rang)}
             >
-               <img src={png} width="64" height="64" alt={png}/>
+               <img src={png} width="48" height="64" alt={png}/>
              </td>
           );
         } else {
@@ -116,12 +114,11 @@ export class StrategoBoard extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
-
     return (
-      <div><p>Stratego Schlachtfeld</p> 
-        <table id="board">
+      <div><p>Schlachtfeld Sicht {farbe}</p> 
+        <table width="300" id="board">
           <tbody>{tbody}</tbody>
-        </table><p>deine Armee</p>
+        </table><p>Reserve {farbe}</p>
         <table id="deck">
           <tbody>{deck}</tbody>
         </table>
