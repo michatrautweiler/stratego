@@ -79,35 +79,36 @@ export class StrategoBoard extends React.Component {
     let meineReserve = this.props.G.armeen[this.props.playerID];
     let farbe = meineReserve.farbe;
     let deck = [];
-    let rows = 0;
-    let cols = meineReserve.gattungen().length;
-    
-    for (let k=0; k < cols; k++) {
-      var t = meineReserve.mannStaerke(k);
-      if (t > rows) rows = t;
-    }
-    for (let i = 0; i < rows; i++) {
-      let zeile = [];
-      for (let rang = 0; rang < cols; rang++) {
-        if (meineReserve.mannStaerke(rang) > i) {
-        const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
-        let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
-          zeile.push(
-            <td
-              key={deckId} class="deck"
-              //className={i===0 ? 'active' : ''}
-              onClick={() => this.onClick(deckId, rang)}
-            >
-               <img src={png} width="48" height="64" alt={png}/>
-             </td>
-          );
-        } else {
-          zeile.push(<td class="deck"/>);
-        }
-      }
-      deck.push(<tr key={i}>{zeile}</tr>);
-    }
+	let rows = 0;
+	let cols = meineReserve.gattungen().length;
 
+	for (let k=0; k < cols; k++) {
+	  var t = meineReserve.mannStaerke(k);
+	  if (t > rows) rows = t;
+	}
+    if (this.props.ctx.phase !== "Kampf") {
+		for (let i = 0; i < rows; i++) {
+		  let zeile = [];
+		  for (let rang = 0; rang < cols; rang++) {
+			if (meineReserve.mannStaerke(rang) > i) {
+			const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
+			let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
+			  zeile.push(
+				<td
+				  key={deckId} class="deck"
+				  //className={i===0 ? 'active' : ''}
+				  onClick={() => this.onClick(deckId, rang)}
+				>
+				   <img src={png} width="48" height="64" alt={png}/>
+				 </td>
+			  );
+			} else {
+			  zeile.push(<td class="deck"/>);
+			}
+		  }
+		  deck.push(<tr key={i}>{zeile}</tr>);
+		}
+    } // Aufstellen
     let winner = null;
     if (this.props.ctx.gameover) {
       winner =
@@ -119,7 +120,10 @@ export class StrategoBoard extends React.Component {
     }
     let knopf = null;
     if (rows === 0) {
-      knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
+      if (this.props.ctx.activePlayers[this.props.playerID] != "Warten")
+        knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
+      else
+        knopf = "bereit zur Schlacht";
     }
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
@@ -127,7 +131,6 @@ export class StrategoBoard extends React.Component {
           <tbody>{tbody}</tbody>
         </table>
         <p>{knopf}</p>
-        <p>Reserve {farbe}</p>
         <table id="deck">
           <tbody>{deck}</tbody>
         </table>
