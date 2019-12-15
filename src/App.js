@@ -8,17 +8,27 @@ export const Stratego = {
   }),
   
   phases: {
-    Aufstellen: { moves: { clickBoard, clickArmee, bereitZurSchlacht}, start: true, next: 'Schlacht' },
-    Schlacht: { moves: bewegen, schlagen, aufgeben, onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]} }
-  },
-  
-  turn: {
-    activePlayers: { all: 'parallel' },
-    stages: {
-      parallel: {}
+    MobilMachung: { 
+      turn: {
+        activePlayers: { all: 'Aufstellen' },
+        stages: {
+          Aufstellen: {
+            moves: { clickBoard, clickArmee }, next: 'Warten'
+          }, Warten: { }
+        }
+      },
+      start: true, 
+      endIf: (G, ctx) => { 
+        return bereitZurSchlacht(G, ctx);
+      },
+      next: 'Kampf'
+    },
+    Kampf: { 
+      moves: bewegen, schlagen, aufgeben, 
+      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] } 
     }
   },
-  
+
   endIf: (G, ctx) => {
     if (G.armeen[0] === null) {
       return {winner: 0};
@@ -38,30 +48,43 @@ export const Stratego = {
   clickBoard(G, ctx, id);
 }*/
 function clickBoard(G, ctx, feldId, player) {
-      var schonDa = G.schlacht.holeFigur(feldId); //TODO: handle occupied fields
-      if (schonDa) return; // avoid handling same event twice (once from each client)
-      var willHin = G.figur[player];
-      if (willHin) {
-        G.schlacht.stelleAuf(willHin, feldId);  
-              
-        if (willHin.farbe === "rot") {
-          reserveRot.entferne(willHin);
-          armeeRot.platziere(willHin, feldId);
-        } else {
-          reserveGelb.entferne(willHin);
-          armeeGelb.platziere(willHin, feldId);        
-        }
-        G.figur[player] = null;
+  var schonDa = G.schlacht.holeFigur(feldId);
+  var willHin = G.figur[player];
+  if (willHin) {
+    if (schonDa) {
+      if (schonDa === willHin) return; // avoid handling same event twice (once from each client)
+      else {
+        G.help ="schon besetzt"; //TODO: handle occupied fields
       }
     }
+    G.schlacht.stelleAuf(willHin, feldId);  
+          
+    if (willHin.farbe === "rot") {
+      reserveRot.entferne(willHin);
+      armeeRot.platziere(willHin, feldId);
+    } else {
+      reserveGelb.entferne(willHin);
+      armeeGelb.platziere(willHin, feldId);        
+    }
+    G.figur[player] = null;
+  }
+}
+
 function clickArmee(G, ctx, rang, player) {
   G.help = rang + " Armee " + G.armeen[player].farbe + " macht mobil";
   G.figur[player] = G.armeen[player].macheMobil(rang);
 }
 
-function bereitZurSchlacht(G, ctx) { 
-  //delete G.armeen[ctx.currentPlayer];
-  ctx.endTurn();
+function bereitZurSchlacht(G, ctx) {
+  if (ctx.activePlayers === null) {
+    return false;
+  } else {
+    var p1 = ctx.activePlayers["0"];
+    var p0 = ctx.activePlayers["1"];
+    if (p0 === p1) {
+      return p0 === "Warten";  
+    }
+  }
 }
 
 function bewegen(G, ctx) {
@@ -79,7 +102,7 @@ function aufgeben(G, ctx) {
 }
 
 // main
-const anzahlSoldaten = 4;
+const anzahlSoldaten = 1;
 
 var reserveRot = new Armee("rot");
 var reserveGelb = new Armee("gelb");

@@ -15,20 +15,22 @@ export class StrategoBoard extends React.Component {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,
     moves: PropTypes.any.isRequired,
+    events: PropTypes.any.isRequired,
     playerID: PropTypes.string,
     isActive: PropTypes.bool,
     isMultiplayer: PropTypes.bool,
   };
 
   onClick = (id,rang) => {
-    //if (this.isActive(id)) {
-      if (isNaN(rang)) {
-        this.props.moves.clickBoard(id, this.props.playerID);
-      } else {
-        this.props.moves.clickArmee(rang, this.props.playerID);
-      }
-    //}
+    if (isNaN(rang)) {
+      this.props.moves.clickBoard(id, this.props.playerID);
+    } else {
+      this.props.moves.clickArmee(rang, this.props.playerID);
+    }
   };
+  bereit = () => {
+    this.props.events.endStage();
+  }
 
   isActive(id) {
     if (!this.props.isActive) return false;
@@ -85,12 +87,12 @@ export class StrategoBoard extends React.Component {
       if (t > rows) rows = t;
     }
     for (let i = 0; i < rows; i++) {
-      let stack = [];
+      let zeile = [];
       for (let rang = 0; rang < cols; rang++) {
         if (meineReserve.mannStaerke(rang) > i) {
         const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
         let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
-          stack.push(
+          zeile.push(
             <td
               key={deckId} class="deck"
               //className={i===0 ? 'active' : ''}
@@ -100,10 +102,10 @@ export class StrategoBoard extends React.Component {
              </td>
           );
         } else {
-          stack.push(<td class="deck"/>);
+          zeile.push(<td class="deck"/>);
         }
       }
-      deck.push(<tr key={i}>{stack}</tr>);
+      deck.push(<tr key={i}>{zeile}</tr>);
     }
 
     let winner = null;
@@ -115,11 +117,17 @@ export class StrategoBoard extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
+    let knopf = null;
+    if (rows === 0) {
+      knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
+    }
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
         <table width="300" id="board">
           <tbody>{tbody}</tbody>
-        </table><p>Reserve {farbe}</p>
+        </table>
+        <p>{knopf}</p>
+        <p>Reserve {farbe}</p>
         <table id="deck">
           <tbody>{deck}</tbody>
         </table>
