@@ -57,14 +57,15 @@ function clickBoard(G, ctx, feldId, player) {
         G.help ="schon besetzt"; //TODO: handle occupied fields
       }
     }
-    G.schlacht.stelleAuf(willHin, feldId);  
-          
-    if (willHin.farbe === "rot") {
-      reserveRot.entferne(willHin);
-      armeeRot.platziere(willHin, feldId);
-    } else {
-      reserveGelb.entferne(willHin);
-      armeeGelb.platziere(willHin, feldId);        
+    var reservist = G.armeen[player].entferne(willHin);
+    if (reservist === willHin) { // verhindert doppeltes platzieren
+      G.schlacht.stelleAuf(willHin, feldId);  
+      if (reservist.farbe === "rot") {
+        armeeRot.platziere(willHin, feldId);
+      } else {
+      //reservist = reserveGelb.entferne(willHin);
+        armeeGelb.platziere(willHin, feldId);        
+      }
     }
     G.figur[player] = null;
   }
@@ -102,7 +103,7 @@ function aufgeben(G, ctx) {
 }
 
 // main
-const anzahlSoldaten = 1;
+const anzahlSoldaten = 4;
 
 var reserveRot = new Armee("rot");
 var reserveGelb = new Armee("gelb");
@@ -138,11 +139,16 @@ Armee.prototype.macheMobil = function(rang) {
   } else return null;
 }
 Armee.prototype.entferne = function(figur) {
-  if (figur.rang == 0) this.flagge = null;
-  else if (figur.rang == 1) {
-    this.soldaten.pop();
+  if (figur.rang == 0) {
+    var f = this.flagge;
+    this.flagge = null;
+    return f;
+  } else if (figur.rang == 1) {
+    return this.soldaten.pop();
   }
-  else {}
+  else {
+    return null;
+  }
 }
 
 Armee.prototype.mannStaerke = function(rang) {
