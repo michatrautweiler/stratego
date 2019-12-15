@@ -8,8 +8,15 @@ export const Stratego = {
   }),
   
   phases: {
-    Aufstellen: { moves: { clickBoard, clickArmee, bereitZurSchlacht}, start: true, next: 'Schlacht'},
-    Schlacht: { moves: bewegen, schlagen, aufgeben, onBegin: (G,ctx) => {G.armeen = [armeeRot, armeeGelb]} }
+    Aufstellen: { moves: { clickBoard, clickArmee, bereitZurSchlacht}, start: true, next: 'Schlacht' },
+    Schlacht: { moves: bewegen, schlagen, aufgeben, onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]} }
+  },
+  
+  turn: {
+    activePlayers: { all: 'parallel' },
+    stages: {
+      parallel: {}
+    }
   },
   
   endIf: (G, ctx) => {
@@ -32,14 +39,16 @@ export const Stratego = {
 }*/
 function clickBoard(G, ctx, feldId, player) {
       var schonDa = G.schlacht.holeFigur(feldId); //TODO: handle occupied fields
+      if (schonDa) return; // avoid handling same event twice (once from each client)
       var willHin = G.figur[player];
       if (willHin) {
-        G.schlacht.stelleAuf(willHin, feldId);        
+        G.schlacht.stelleAuf(willHin, feldId);  
+              
         if (willHin.farbe === "rot") {
-          reserveRot.entferne(willHin.rang);
+          reserveRot.entferne(willHin);
           armeeRot.platziere(willHin, feldId);
         } else {
-          reserveGelb.entferne(willHin.rang);
+          reserveGelb.entferne(willHin);
           armeeGelb.platziere(willHin, feldId);        
         }
         G.figur[player] = null;
@@ -51,7 +60,7 @@ function clickArmee(G, ctx, rang, player) {
 }
 
 function bereitZurSchlacht(G, ctx) { 
-  delete G.armeen[ctx.currentPlayer];
+  //delete G.armeen[ctx.currentPlayer];
   ctx.endTurn();
 }
 
@@ -78,20 +87,21 @@ var armeeRot = new Armee("rot");
 var armeeGelb = new Armee("gelb");
 
 // Figur
-function Figur(typ,farbe,rang) {
+function Figur(typ,farbe,rang, num) {
   this.typ = typ;
   this.farbe = farbe;
   this.rang = rang;
+  this.num = num;
 }
 
 // Armee
 function Armee(farbe) {
   this.farbe = farbe;
-  this.flagge = new Figur("flagge",farbe,0);
-  this.soldaten = new Array(anzahlSoldaten);
+  this.flagge = new Figur("flagge",farbe,0,1);
+  this.soldaten = new Array();
   for (var i=anzahlSoldaten; i>0; i--) {
-    var soldat = new Figur("soldat",farbe,1);
-    this.soldaten[i-1] = soldat;
+    var soldat = new Figur("soldat",farbe,1,i);
+    this.soldaten.push(soldat);
   }
 }
   
@@ -104,11 +114,14 @@ Armee.prototype.macheMobil = function(rang) {
     return this.soldaten[this.soldaten.length-1];  
   } else return null;
 }
-Armee.prototype.entferne = function(rang) {
-  if (rang == 0) this.flagge = null;
-  else if (rang == 1) this.soldaten.pop();
+Armee.prototype.entferne = function(figur) {
+  if (figur.rang == 0) this.flagge = null;
+  else if (figur.rang == 1) {
+    this.soldaten.pop();
+  }
   else {}
 }
+
 Armee.prototype.mannStaerke = function(rang) {
   if (rang == 0) {
     if (this.flagge === null) return 0; else return 1;

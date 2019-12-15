@@ -74,19 +74,20 @@ export class StrategoBoard extends React.Component {
     //
     // deine Armee 
     //
-    let farbe = this.props.G.armeen[this.props.playerID].farbe;
+    let meineReserve = this.props.G.armeen[this.props.playerID];
+    let farbe = meineReserve.farbe;
     let deck = [];
     let rows = 0;
-    let cols = this.props.G.armeen[this.props.playerID].gattungen().length;
+    let cols = meineReserve.gattungen().length;
     
     for (let k=0; k < cols; k++) {
-      var t = this.props.G.armeen[this.props.playerID].mannStaerke(k);
+      var t = meineReserve.mannStaerke(k);
       if (t > rows) rows = t;
     }
     for (let i = 0; i < rows; i++) {
       let stack = [];
       for (let rang = 0; rang < cols; rang++) {
-        if (this.props.G.armeen[this.props.playerID].mannStaerke(rang) > i) {
+        if (meineReserve.mannStaerke(rang) > i) {
         const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
         let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
           stack.push(

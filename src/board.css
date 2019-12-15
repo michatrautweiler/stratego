@@ -39,6 +39,7 @@ td.active:hover {
 }
 
 td.deck {
-  border:none
+  border:none;
+  width: 40px;
 }
 
