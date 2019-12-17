@@ -22,10 +22,12 @@ export class StrategoBoard extends React.Component {
   };
 
   onClick = (id,rang) => {
+    let me = this.props.playerID;
+    if (!me) me = this.props.ctx.currentPlayer;
     if (isNaN(rang)) {
-      this.props.moves.clickBoard(id, this.props.playerID);
+      this.props.moves.clickBoard(id, me);
     } else {
-      this.props.moves.clickArmee(rang, this.props.playerID);
+      this.props.moves.clickArmee(rang, me);
     }
   };
   bereit = () => {
@@ -57,7 +59,7 @@ export class StrategoBoard extends React.Component {
               class="active"
               onClick={() => this.onClick(feldId, null)}
             >
-              <img src={png} width="48" height="64" alt={png}/>
+              {feldId} <img src={png} width="48" height="64" alt={png}/>
             </td>
           );
           
@@ -66,7 +68,7 @@ export class StrategoBoard extends React.Component {
             <td
               key={feldId}
               onClick={() => this.onClick(feldId)}
-            >
+            > {feldId}
             </td>
           );
         }
@@ -76,7 +78,9 @@ export class StrategoBoard extends React.Component {
     //
     // deine Armee 
     //
-    let meineReserve = this.props.G.armeen[this.props.playerID];
+    let me = this.props.playerID;
+    if (!me) me = this.props.ctx.currentPlayer;
+    let meineReserve = this.props.G.armeen[me];
     let farbe = meineReserve.farbe;
     let deck = [];
 	let rows = 0;
@@ -91,7 +95,7 @@ export class StrategoBoard extends React.Component {
 		  let zeile = [];
 		  for (let rang = 0; rang < cols; rang++) {
 			if (meineReserve.mannStaerke(rang) > i) {
-			const deckId = (size * size + size * i + rang) * (this.props.playerID + 1);
+			const deckId = (size * size + size * i + rang) * (me + 1);
 			let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
 			  zeile.push(
 				<td
@@ -99,7 +103,7 @@ export class StrategoBoard extends React.Component {
 				  //className={i===0 ? 'active' : ''}
 				  onClick={() => this.onClick(deckId, rang)}
 				>
-				   <img src={png} width="48" height="64" alt={png}/>
+				   {deckId} <img src={png} width="48" height="64" alt={png}/>
 				 </td>
 			  );
 			} else {
@@ -120,7 +124,7 @@ export class StrategoBoard extends React.Component {
     }
     let knopf = null;
     if (rows === 0) {
-      if (this.props.ctx.activePlayers[this.props.playerID] != "Warten")
+      if (this.props.ctx.activePlayers[me] !== "Warten")
         knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
       else
         knopf = "bereit zur Schlacht";

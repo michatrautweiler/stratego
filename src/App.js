@@ -6,6 +6,9 @@ export const Stratego = {
     armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
   }),
+  turn: {
+    moveLimit: 1,
+  },
   
   phases: {
     MobilMachung: { 
@@ -13,7 +16,7 @@ export const Stratego = {
         activePlayers: { all: 'Aufstellen' },
         stages: {
           Aufstellen: {
-            moves: { clickBoard, clickArmee }, next: 'Warten'
+            moves: { clickArmee, clickBoard }, next: 'Warten'
           }, Warten: { }
         }
       },
@@ -25,7 +28,7 @@ export const Stratego = {
     },
     Kampf: { 
       moves: bewegen, schlagen, aufgeben, 
-      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] } 
+      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] }
     }
   },
 
@@ -73,7 +76,7 @@ function clickBoard(G, ctx, feldId, player) {
 
 function clickArmee(G, ctx, rang, player) {
   G.help = rang + " Armee " + G.armeen[player].farbe + " macht mobil";
-  G.figur[player] = G.armeen[player].macheMobil(rang);
+  G.figur[player] = G.armeen[player].macheMobil(rang); // assigning G allowed from moves only
 }
 
 function bereitZurSchlacht(G, ctx) {
@@ -172,7 +175,9 @@ Armee.prototype.platziere = function(figur, id) {
   }
 }
 
+//
 // Spielbrett
+//
 function Schlachtfeld(dim) {
   this.feldGroesse = dim;
   this.feld = new Array(dim * dim).fill(null);
@@ -183,7 +188,9 @@ Schlachtfeld.prototype.stelleAuf = function(figur, platz) {
 Schlachtfeld.prototype.holeFigur = function(platz) {   
   return this.feld[platz];
 };
-
+Schlachtfeld.prototype.groesse = function() {
+  return this.feldGroesse;
+}
 
 
 // game rules
