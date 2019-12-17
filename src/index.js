@@ -9,6 +9,9 @@ import * as serviceWorker from './serviceWorker';
 
 // single player
 //const StrategoClient = Client({ game: Stratego, board: StrategoBoard });
+
+// bot
+/*
 const App = Client({ game: Stratego, board: StrategoBoard, 
   ai: {
     enumerate: (G, ctx) => {
@@ -25,13 +28,13 @@ const App = Client({ game: Stratego, board: StrategoBoard,
     },
   }, 
 });
+*/
 
 // multi player, local
-/*
-const App = Client({
+const StrategoClient = Client({
   game: Stratego,
   board: StrategoBoard,
-//  multiplayer: Local()
+  multiplayer: Local()
 });
 
 const App = () => (
@@ -42,7 +45,7 @@ const App = () => (
     </td></tr>
   </table>
 );
-*/
+
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

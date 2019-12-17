@@ -55,8 +55,10 @@ function clickBoard(G, ctx, feldId, player) {
   var willHin = G.figur[player];
   if (willHin) {
     if (schonDa) {
-      if (schonDa === willHin) return; // avoid handling same event twice (once from each client)
-      else {
+      if (schonDa === willHin) {
+        G.figur[player] = null;
+        return; // avoid handling same event twice (once from each client)
+      } else {
         G.help ="schon besetzt"; //TODO: handle occupied fields
       }
     }
@@ -70,8 +72,8 @@ function clickBoard(G, ctx, feldId, player) {
         armeeGelb.platziere(willHin, feldId);        
       }
     }
-    G.figur[player] = null;
   }
+  G.figur[player] = null;
 }
 
 function clickArmee(G, ctx, rang, player) {
