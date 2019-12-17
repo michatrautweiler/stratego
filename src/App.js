@@ -30,7 +30,33 @@ export const Stratego = {
       moves: bewegen, schlagen, aufgeben, 
       onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] }
     }
-  },
+  }, /* TODO refactor G to players, secret for easy removal
+  playerView: (G, ctx, playerID) => {
+    if (ctx.numMoves < 1) return G;
+    var anzahlFelder = G.schlacht.groesse() * G.schlacht.groesse();
+    var secretSchlacht = new Schlachtfeld(anzahlFelder);
+    for (var feld=0; feld < anzahlFelder; feld++) {
+      var figur = G.schlacht.holeFigur(feld);
+      if (figur) {
+        //if (figur.farbe === "rot") { //FIXME compare ids
+          if (playerID == 0) {
+            var dummyRot = new Figur("dummy", "rot", "X", 0);
+            secretSchlacht.stelleAuf(dummyRot, feld);
+          } else {
+            secretSchlacht.stelleAuf(figur, feld);
+          }
+        //}
+      }
+    }
+    var Gsecret = {
+      help: "secret",
+      figur: G.figur,
+      schlacht: secretSchlacht,
+      armeen: G.armeen,
+      kampf: G.kampf
+    };
+    return Gsecret;
+  }, */
 
   endIf: (G, ctx) => {
     if (G.armeen[0] === null) {
