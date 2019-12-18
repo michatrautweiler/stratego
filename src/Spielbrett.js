@@ -121,6 +121,7 @@ export class Spielbrett extends React.Component {
     //
     // deine Armee / Reserve
     //
+    let info = null;
     let meineReserve = this.props.G.armeen[me];
     let farbe = meineReserve.farbe;
     let deck = [];
@@ -132,29 +133,34 @@ export class Spielbrett extends React.Component {
 	  if (t > rows) rows = t;
 	}
     if (this.props.ctx.phase === "MobilMachung") {
-		for (let i = 0; i < rows; i++) {
-		  let zeile = [];
-		  for (let rang = 0; rang < cols; rang++) {
-			if (meineReserve.mannStaerke(rang) > i) {
-			  const feld = (size * size + size * i + rang) * (me + 1);
-			  let png = "./figur" + rang + farbe + ".svg"; 
+	  for (let i = 0; i < rows; i++) {
+		let zeile = [];
+		for (let rang = 0; rang < cols; rang++) {
+		  if (meineReserve.mannStaerke(rang) > i) {
+			const feld = (size * size + size * i + rang) * (me + 1);
+			let png = "./figur" + rang + farbe + ".svg"; 
 			  
-			  zeile.push(
-				<td
-				  key={feld} class="deck"
-				  //className={i===0 ? 'active' : ''}
-				  onClick={() => this.stelleAuf(feld, rang)}
-				>
-				   <img src={png} width="48" height="64" alt={png}/>
-				 </td>
-			  ); //TODO: remove rang from onClick
-			} else {
-			  zeile.push(<td class="deck"/>);
-			}
-		  }
-		  deck.push(<tr key={i}>{zeile}</tr>);
-		}
-    } // Aufstellen
+			zeile.push(
+			  <td
+				key={feld} class="deck"
+				//className={i===0 ? 'active' : ''}
+			    onClick={() => this.stelleAuf(feld, rang)}
+			  >
+			    <img src={png} width="48" height="64" alt={png}/>
+			  </td>
+		    ); //TODO: remove rang from onClick
+		  } else {
+		    zeile.push(<td class="deck"/>);
+	      }
+	    }
+	    deck.push(<tr key={i}>{zeile}</tr>);
+	  }
+      info = <i>dein Gegner ist am aufstellen seiner Figuren...</i>;
+      let notMe = (me + 1) % 2;
+      if (this.props.G.armeen[0].istAufgestellt()) {
+        info =  <b>dein Gegner wartet bis du alle Figuren aufgestellt hast!</b>;
+      }
+    } // MobilMachung
     //
     // game controls & info
     //
@@ -167,25 +173,16 @@ export class Spielbrett extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
-    let knopf = null;
-    if (rows === 0) {
-      if (this.props.ctx.activePlayers) {
-        if (this.props.ctx.activePlayers[me] !== "Warten") {
-          knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
-        } else {
-          knopf = "bereit zur Schlacht";
-        }
-      }
-    }
+    
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
         <table width="300" id="board">
           <tbody>{tbody}</tbody>
         </table>
-        <p>{knopf}</p>
         <table id="deck">
           <tbody>{deck}</tbody>
         </table>
+        <p>{info}</p>
         {winner}
       </div>
     );

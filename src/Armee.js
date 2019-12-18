@@ -78,4 +78,12 @@ export class Armee {
     this.soldaten.push(figur);
   }
  }
+ 
+ istAufgestellt() {
+   var anzahlMann = 0;
+   for (var rang = 0; rang < this.gattungen().length; rang++) {
+     anzahlMann += this.mannStaerke(rang);
+   }
+   return anzahlMann === 0;
+ }
 }

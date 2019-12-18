@@ -20,14 +20,12 @@ export const Stratego = {
         activePlayers: { all: 'Aufstellen' },
         stages: {
           Aufstellen: {
-            moves: { platziere }, next: 'Warten'
-          }, Warten: { }
+            moves: { platziere },
+          }
         }
       },
       start: true, 
-      endIf: (G, ctx) => { 
-        return bereitZurSchlacht(G, ctx);
-      },
+      endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
     },
     Kampf: { 
@@ -95,6 +93,9 @@ function platziere(G, ctx, willHin, feld, player) {
   }
 }
 
+function bereit(G, ctx) {
+   ctx.events.endStage();
+}
 
 function bereitZurSchlacht(G, ctx) {
   if (ctx.activePlayers === null) {
