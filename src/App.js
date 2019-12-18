@@ -120,12 +120,11 @@ function bewege(G, ctx, willHin, feld, player) {
   G.kampf = [];
 }
 
-function schlage(G, ctx, willHin, feld) {
+function schlage(G, ctx, willHin, schonDa) {
   G.kampf = [];
   G.log.unshift("schlage");
-  var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
-    G.log.unshift(schonDa.typ + " " + schonDa.farbe + " doppelt");
+    G.log.unshift(willHin.typ + " " + willHin.farbe + " doppelt");
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
     G.log.unshift("Kampf gegen " + schonDa.typ + " " + schonDa.farbe);
@@ -135,16 +134,15 @@ function schlage(G, ctx, willHin, feld) {
     if (willHin.gewinnt(schonDa)) {
       // gewonnen, schonDa muss weg
       G.schlacht.gestorben(feld);
-      G.log.unshift("found:"+ G.armeen[schonDa.besitzer].hat(schonDa) +" in "+G.armeen[schonDa.besitzer].farbe); 
       G.armeen[schonDa.besitzer].entferne(schonDa);
-      G.schlacht.verschiebe(willHin, feld);  
+      var feld = G.schlacht.findeFigur(schonDa);
+      G.schlacht.verschiebe(willHin, feld);
       G.log.unshift(willHin.farbe + " " + willHin.typ + " gewinnt " + feld);
     } else {
       // verloren, willHin abräumen aus Armee und Spielfeld 
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
-      G.log.unshift("found:"+ G.armeen[willHin.besitzer].hat(willHin) +" in "+G.armeen[willHin.besitzer].farbe); 
       G.armeen[willHin.besitzer].entferne(willHin);
-      G.log.unshift(willHin.farbe + " " + willHin.typ + " verliert " + feld);
+      G.log.unshift(willHin.farbe + " " + willHin.typ + " verliert ");
     }
   } else {
     //TODO Feld ist frei => bewege

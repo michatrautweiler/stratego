@@ -36,7 +36,7 @@ export class StrategoBoard extends React.Component {
       if (this.props.ctx.phase === "Kampf") {
         if (schonDa) {
           if (schonDa.besitzer !== willHin.besitzer) {
-            this.props.moves.schlage(willHin, feld, me);
+            this.props.moves.schlage(willHin, schonDa);
           } else {
             // Feld ist besetzt
           }
@@ -157,7 +157,7 @@ export class StrategoBoard extends React.Component {
     if (this.props.ctx.gameover) {
       winner =
         this.props.ctx.gameover.winner !== undefined ? (
-          <div id="winner">Winner: {this.props.ctx.gameover.winner}</div>
+          <div id="winner">Gewinner ist {this.props.ctx.gameover.winner}!</div>
         ) : (
             <div id="winner">Draw!</div>
           );
