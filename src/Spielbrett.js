@@ -34,16 +34,18 @@ export class Spielbrett extends React.Component {
         return; // avoid handling same event twice (once from each client)
       }
       if (this.props.ctx.phase === "Kampf") {
-        if (schonDa) {
-          if (schonDa.besitzer !== willHin.besitzer) {
-            this.props.moves.schlage(willHin, schonDa);
+        if (this.props.G.schlacht.istErreichbar(willHin, feld)) {
+          if (schonDa) {
+            if (schonDa.besitzer !== willHin.besitzer) {
+              this.props.moves.schlage(willHin, schonDa);
+            } else {
+              // Feld ist besetzt
+            }
           } else {
-            // Feld ist besetzt
+            // Feld ist frei
+            this.props.moves.bewege(willHin, feld, me);
           }
-        } else if (willHin.istMobil()) {
-          // Feld ist frei
-          this.props.moves.bewege(willHin, feld, me);
-        }
+        } // erreichbar
       } else {
         this.props.moves.platziere(willHin, feld, me);
       }
