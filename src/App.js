@@ -115,6 +115,10 @@ function bewege(G, ctx, willHin, feld, player) {
   } else if (schonDa) {
     G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
     //TODO: handle occupied fields => schlage
+  } else {
+    // Feld ist frei
+    G.schlacht.verschiebe(willHin, feld);  
+    G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
   }
 }
 
@@ -131,28 +135,29 @@ function gebeAuf(G, ctx) {
 // main
 const anzahlSoldaten = 1;
 
-var reserveRot = new Armee("rot", "reserve");
-var reserveGelb = new Armee("gelb", "reserve");
-var armeeRot = new Armee("rot", "aktiv");
-var armeeGelb = new Armee("gelb", "aktiv");
+var reserveRot = new Armee("rot", "reserve", 0);
+var reserveGelb = new Armee("gelb", "reserve", 1);
+var armeeRot = new Armee("rot", "aktiv", 0);
+var armeeGelb = new Armee("gelb", "aktiv", 1);
 
 // Figur
-function Figur(typ,farbe,rang, num) {
+function Figur(typ,farbe,rang, num, player) {
   this.typ = typ;
   this.farbe = farbe;
   this.rang = rang;
   this.num = num;
+  this.besitzer = player;
 }
 
 
 // Armee
-function Armee(farbe, typ) {
+function Armee(farbe, typ, player) {
   this.typ = typ;
   this.farbe = farbe;
-  this.flagge = new Figur("flagge",farbe,0,1);
+  this.flagge = new Figur("flagge",farbe,0,1, player);
   this.soldaten = [];
   for (var i=anzahlSoldaten; i>0; i--) {
-    var soldat = new Figur("soldat",farbe,1,i);
+    var soldat = new Figur("soldat",farbe,1,i, player);
     this.soldaten.push(soldat);
   }
 }
@@ -219,7 +224,16 @@ Schlachtfeld.prototype.holeFigur = function(platz) {
 };
 Schlachtfeld.prototype.groesse = function() {
   return this.feldGroesse;
-}
+};
+Schlachtfeld.prototype.findeFigur = function(figur) {   
+  return this.feld.indexOf(figur);
+};
+Schlachtfeld.prototype.verschiebe = function(figur, zuFeld) {
+  var vonFeld = this.findeFigur(figur);
+  this.stelleAuf(figur, zuFeld);
+  this.feld[vonFeld] = null;
+};
+
 
 
 // game rules

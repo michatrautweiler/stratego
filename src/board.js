@@ -34,14 +34,23 @@ export class StrategoBoard extends React.Component {
         return; // avoid handling same event twice (once from each client)
       }
       if (this.props.ctx.phase === "Kampf") {
-        this.props.moves.bewege(willHin, feld, me);
+        if (schonDa) {
+          // Feld ist besetzt
+          this.props.moves.schlage(willHin, feld, me);
+        } else {
+          // Feld ist frei
+          this.props.moves.bewege(willHin, feld, me);
+        }
       } else {
         this.props.moves.platziere(willHin, feld, me);
       }
       this.figurInBewegung[me] = null;
     } else {
       // Figur auf Feld in Bewegung setzen / in die Hand nehmen
-      this.figurInBewegung[me] = this.props.G.schlacht.holeFigur(feld);
+      var figur = this.props.G.schlacht.holeFigur(feld);
+      if (figur) {
+        if (figur.besitzer == me) this.figurInBewegung[me] = figur;
+      }
     }
   };
   
@@ -87,7 +96,7 @@ export class StrategoBoard extends React.Component {
               class="active"
               onClick={() => this.onClick(feldId, null)}
             >
-              {feldId} <img src={png} width="48" height="64" alt={png}/>
+              <img src={png} width="48" height="64" alt={png}/>
             </td>
           );
           
