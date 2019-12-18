@@ -108,7 +108,14 @@ function bereitZurSchlacht(G, ctx) {
 }
 
 function bewege(G, ctx, willHin, feld, player) {
-  platziere(G, ctx, willHin, feld, player);
+  var schonDa = G.schlacht.holeFigur(feld);
+  if (schonDa === willHin) {
+    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    return; // avoid handling same event twice (once from each client)
+  } else if (schonDa) {
+    G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
+    //TODO: handle occupied fields => schlage
+  }
 }
 
 function schlage(G, ctx) {
@@ -136,6 +143,7 @@ function Figur(typ,farbe,rang, num) {
   this.rang = rang;
   this.num = num;
 }
+
 
 // Armee
 function Armee(farbe, typ) {
@@ -188,6 +196,10 @@ Armee.prototype.hinzu = function(figur) {
     this.flagge = figur;
   }
   else if (figur.rang === 1) {
+    var istGleicheFigur = function(soldat) {
+       return soldat.num === figur.num;
+    }
+    if (!this.soldaten.find(istGleicheFigur))
     this.soldaten.push(figur);
   }
 }
