@@ -48,7 +48,7 @@ export class StrategoBoard extends React.Component {
     } else {
       // Figur auf Feld in Bewegung setzen / in die Hand nehmen
       var figur = this.props.G.schlacht.holeFigur(feld);
-      if (figur) {
+      if (figur) { //ctx.currentPlayer typeof string
         if (figur.besitzer == me) this.figurInBewegung[me] = figur;
       }
     }
@@ -161,10 +161,13 @@ export class StrategoBoard extends React.Component {
     }
     let knopf = null;
     if (rows === 0) {
-      if (this.props.ctx.activePlayers[me] !== "Warten")
-        knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
-      else
-        knopf = "bereit zur Schlacht";
+      if (this.props.ctx.activePlayers) {
+        if (this.props.ctx.activePlayers[me] !== "Warten") {
+          knopf = <button onClick={() => this.bereit()}>bereit zur Schlacht</button>;
+        } else {
+          knopf = "bereit zur Schlacht";
+        }
+      }
     }
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 

@@ -58,15 +58,10 @@ export const Stratego = {
   }, */
 
   endIf: (G, ctx) => {
-    if (G.armeen[0] === null) {
-      return {winner: 0};
-    } else if (G.armeen[1] === null) {
-      return {winner: 1};
+    if (IsVictory(G.kampf)) {
+      return { winner: G.kampf[ctx.currentPlayer].farbe };
     }
-    else if (IsVictory(G.kampf)) {
-      return { winner: ctx.currentPlayer };
-    }
-    // todo if (IsDraw(G.cells)) {}
+    // TODO DRAW: eine bewedbaren Figuren
   }
 };
 
@@ -120,10 +115,36 @@ function bewege(G, ctx, willHin, feld, player) {
     G.schlacht.verschiebe(willHin, feld);  
     G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
   }
+  G.kampf = [];
 }
 
-function schlage(G, ctx) {
-
+function schlage(G, ctx, willHin, feld, player) {
+  G.kampf = [];
+  var schonDa = G.schlacht.holeFigur(feld);
+  if (schonDa === willHin) {
+    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    return; // avoid handling same event twice (once from each client)
+  } else if (schonDa) {
+    G.help = "Kampf gegen " + schonDa.typ + " " + schonDa.farbe;
+    G.kampf[schonDa.besitzer] = schonDa;
+    G.kampf[willHin.besitzer] = willHin;
+    // Sieger bestimmen, Verlierer entfernen aus Armee
+    if (willHin.gewinnt(schonDa)) {
+      // gewonnen, schonDa muss weg
+      G.schlacht.gestorben(feld);
+      G.armeen[schonDa.besitzer].entferne(schonDa);
+      G.schlacht.verschiebe(willHin, feld);  
+      G.help = willHin.farbe + " " + willHin.typ + " gewinnt " + feld;
+    } else {
+      // verloren, willHin abräumen aus Armee und Spielfeld 
+      G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
+      G.armeen[player].entferne(willHin);
+      G.help = willHin.farbe + " " + willHin.typ + " verliert " + feld;
+    }
+  } else {
+    //TODO Feld ist frei => bewege
+    G.help = schonDa.typ + " ?bewege?";
+  }
 }
 
 function gebeAuf(G, ctx) {
@@ -133,7 +154,7 @@ function gebeAuf(G, ctx) {
 }
 
 // main
-const anzahlSoldaten = 1;
+const anzahlSoldaten = 2;
 
 var reserveRot = new Armee("rot", "reserve", 0);
 var reserveGelb = new Armee("gelb", "reserve", 1);
@@ -148,7 +169,10 @@ function Figur(typ,farbe,rang, num, player) {
   this.num = num;
   this.besitzer = player;
 }
-
+Figur.prototype.gewinnt = function(gegner) {
+  return this.rang > gegner.rang;
+  // TODO: draw, spy, miner
+}
 
 // Armee
 function Armee(farbe, typ, player) {
@@ -233,13 +257,16 @@ Schlachtfeld.prototype.verschiebe = function(figur, zuFeld) {
   this.stelleAuf(figur, zuFeld);
   this.feld[vonFeld] = null;
 };
-
+Schlachtfeld.prototype.gestorben = function(platz) {
+  this.feld[platz] = null;
+};
 
 
 // game rules
 function IsVictory(kampf) {
-  if (kampf[0] === null) return;
-  if (kampf[1] === null) return;
+  if (!kampf) return;
+  if (!kampf[0]) return;
+  if (!kampf[1]) return;
   
   // Flagge ist im Kampf 
   if (kampf[0].rang === 0) return true;
