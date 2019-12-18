@@ -20,23 +20,38 @@ export class StrategoBoard extends React.Component {
     isActive: PropTypes.bool,
     isMultiplayer: PropTypes.bool,
   };
+  figurInBewegung = { "0": null, "1": null };
 
-  onClick = (id,rang) => {
+  onClick = (feld,rang) => {
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
-    if (isNaN(rang)) {
-      this.props.moves.clickBoard(id, me);
+    if (rang > -1) {
+      this.nehmeFigurAusReserve(rang, me);
     } else {
-      this.props.moves.clickArmee(rang, me);
+      // Figur aus der Bewegung aufs Feld setzen
+      var willHin = this.figurInBewegung[me];
+      if (willHin) {
+        var schonDa = this.props.G.schlacht.holeFigur(feld);
+        if (schonDa === willHin) {
+          this.figurInBewegung[me] = null;
+          return; // avoid handling same event twice (once from each client)
+        }
+        this.props.moves.platziere(willHin, feld, me);
+        this.figurInBewegung[me] = null;
+      }
     }
   };
+  
   bereit = () => {
     this.props.events.endStage();
   }
 
+  nehmeFigurAusReserve = (rang, player) => {
+    this.figurInBewegung[player] = this.props.G.armeen[player].macheMobil(rang); 
+  }
+  
   isActive(id) {
     if (!this.props.isActive) return false;
-    //if (this.props.G.schlacht.reihe1[id] !== null) return false;
     return true;
   }
 
@@ -76,7 +91,7 @@ export class StrategoBoard extends React.Component {
       tbody.push(<tr key={i}>{cells}</tr>);
     }
     //
-    // deine Armee 
+    // deine Armee / Reserve
     //
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
@@ -95,15 +110,15 @@ export class StrategoBoard extends React.Component {
 		  let zeile = [];
 		  for (let rang = 0; rang < cols; rang++) {
 			if (meineReserve.mannStaerke(rang) > i) {
-			const deckId = (size * size + size * i + rang) * (me + 1);
+			const feld = (size * size + size * i + rang) * (me + 1);
 			let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
 			  zeile.push(
 				<td
-				  key={deckId} class="deck"
+				  key={feld} class="deck"
 				  //className={i===0 ? 'active' : ''}
-				  onClick={() => this.onClick(deckId, rang)}
+				  onClick={() => this.onClick(feld, rang)}
 				>
-				   {deckId} <img src={png} width="48" height="64" alt={png}/>
+				   {feld} <img src={png} width="48" height="64" alt={png}/>
 				 </td>
 			  );
 			} else {

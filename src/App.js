@@ -1,7 +1,6 @@
 export const Stratego = {
   setup: () => ({ 
     help: "Los! Wähle eine Figur deiner Armee.",
-    figur: Array(2).fill(null),
     schlacht: new Schlachtfeld(4),
     armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
@@ -16,7 +15,7 @@ export const Stratego = {
         activePlayers: { all: 'Aufstellen' },
         stages: {
           Aufstellen: {
-            moves: { clickArmee, clickBoard }, next: 'Warten'
+            moves: { platziere }, next: 'Warten'
           }, Warten: { }
         }
       },
@@ -71,41 +70,30 @@ export const Stratego = {
   }
 };
 
+//
 // moves
-/*function platzieren(G, ctx, id) {
-  clickArmee(G, ctx, id);
-  clickBoard(G, ctx, id);
-}*/
-function clickBoard(G, ctx, feldId, player) {
-  var schonDa = G.schlacht.holeFigur(feldId);
-  var willHin = G.figur[player];
-  if (willHin) {
-    if (schonDa) {
-      if (schonDa === willHin) {
-        G.figur[player] = null;
-        return; // avoid handling same event twice (once from each client)
-      } else {
-        G.help ="schon besetzt"; //TODO: handle occupied fields
-      }
-    }
-    var reservist = G.armeen[player].entferne(willHin);
-    if (reservist === willHin) { // verhindert doppeltes platzieren
-      G.schlacht.stelleAuf(willHin, feldId);  
-      if (reservist.farbe === "rot") {
-        armeeRot.platziere(willHin, feldId);
-      } else {
-      //reservist = reserveGelb.entferne(willHin);
-        armeeGelb.platziere(willHin, feldId);        
-      }
+//
+function platziere(G, ctx, willHin, feld, player) {
+  var schonDa = G.schlacht.holeFigur(feld);
+  if (schonDa === willHin) {
+    G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    return; // avoid handling same event twice (once from each client)
+  } else if (schonDa) {
+    G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
+    //TODO: handle occupied fields
+  }
+  var reservist = G.armeen[player].entferne(willHin);
+  if (reservist === willHin) { // verhindert doppeltes platzieren
+    G.schlacht.stelleAuf(willHin, feld);  
+    G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
+    if (reservist.farbe === "rot") {
+      armeeRot.hinzu(willHin, feld);
+    } else {
+      armeeGelb.hinzu(willHin, feld);        
     }
   }
-  G.figur[player] = null;
 }
 
-function clickArmee(G, ctx, rang, player) {
-  G.help = rang + " Armee " + G.armeen[player].farbe + " macht mobil";
-  G.figur[player] = G.armeen[player].macheMobil(rang); // assigning G allowed from moves only
-}
 
 function bereitZurSchlacht(G, ctx) {
   if (ctx.activePlayers === null) {
@@ -153,7 +141,7 @@ function Figur(typ,farbe,rang, num) {
 function Armee(farbe) {
   this.farbe = farbe;
   this.flagge = new Figur("flagge",farbe,0,1);
-  this.soldaten = new Array();
+  this.soldaten = [];
   for (var i=anzahlSoldaten; i>0; i--) {
     var soldat = new Figur("soldat",farbe,1,i);
     this.soldaten.push(soldat);
@@ -162,19 +150,19 @@ function Armee(farbe) {
   
 
 Armee.prototype.macheMobil = function(rang) {
-  if (rang == 0) {
+  if (rang === 0) {
     return this.flagge;
   }
-  else if (rang == 1) {
+  else if (rang === 1) {
     return this.soldaten[this.soldaten.length-1];  
   } else return null;
 }
 Armee.prototype.entferne = function(figur) {
-  if (figur.rang == 0) {
+  if (figur.rang === 0) {
     var f = this.flagge;
     this.flagge = null;
     return f;
-  } else if (figur.rang == 1) {
+  } else if (figur.rang === 1) {
     return this.soldaten.pop();
   }
   else {
@@ -183,22 +171,22 @@ Armee.prototype.entferne = function(figur) {
 }
 
 Armee.prototype.mannStaerke = function(rang) {
-  if (rang == 0) {
+  if (rang === 0) {
     if (this.flagge === null) return 0; else return 1;
   }
-  else if (rang == 1) {
+  else if (rang === 1) {
     return this.soldaten.length;
   }
   else return 0;
 }
 Armee.prototype.gattungen = function() {
-  return ["flagge","soldaten"];
+  return ["flagge","soldat"];
 }
-Armee.prototype.platziere = function(figur, id) {
-  if (figur.rang == 0) {
+Armee.prototype.hinzu = function(figur, id) {
+  if (figur.rang === 0) {
     this.flagge = figur;
   }
-  else if (figur.rang == 1) {
+  else if (figur.rang === 1) {
     this.soldaten.push(figur);
   }
 }
