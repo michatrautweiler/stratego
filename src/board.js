@@ -35,8 +35,11 @@ export class StrategoBoard extends React.Component {
       }
       if (this.props.ctx.phase === "Kampf") {
         if (schonDa) {
-          // Feld ist besetzt
-          this.props.moves.schlage(willHin, feld, me);
+          if (schonDa.besitzer !== willHin.besitzer) {
+            this.props.moves.schlage(willHin, feld, me);
+          } else {
+            // Feld ist besetzt
+          }
         } else {
           // Feld ist frei
           this.props.moves.bewege(willHin, feld, me);

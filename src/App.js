@@ -1,5 +1,6 @@
 export const Stratego = {
   setup: () => ({ 
+    log: Array(1),
     help: "Los! Wähle eine Figur deiner Armee.",
     schlacht: new Schlachtfeld(4),
     armeen: [reserveRot, reserveGelb],
@@ -61,7 +62,7 @@ export const Stratego = {
     if (IsVictory(G.kampf)) {
       return { winner: G.kampf[ctx.currentPlayer].farbe };
     }
-    // TODO DRAW: eine bewedbaren Figuren
+    // TODO DRAW: eine bewegbaren Figuren
   }
 };
 
@@ -74,10 +75,10 @@ function platziere(G, ctx, willHin, feld, player) {
     // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
-    G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
+    G.log.unshift("besetzt von " + schonDa.typ + " " + schonDa.farbe); 
     //TODO: handle occupied fields
   }
-  var reservist = G.armeen[player].entferne(willHin);
+  var reservist = G.armeen[willHin.besitzer].entferne(willHin);
   if (reservist === willHin) { // verhindert doppeltes platzieren
     G.schlacht.stelleAuf(willHin, feld);  
     G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
@@ -103,47 +104,51 @@ function bereitZurSchlacht(G, ctx) {
 }
 
 function bewege(G, ctx, willHin, feld, player) {
+  G.log.unshift("bewege");
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
-    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    //G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
-    G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
+    G.log.unshift("besetzt von " + schonDa.typ + " " + schonDa.farbe); 
     //TODO: handle occupied fields => schlage
   } else {
     // Feld ist frei
     G.schlacht.verschiebe(willHin, feld);  
-    G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
+    G.log.unshift(willHin.farbe + " " + willHin.typ + " auf " + feld);
   }
   G.kampf = [];
 }
 
-function schlage(G, ctx, willHin, feld, player) {
+function schlage(G, ctx, willHin, feld) {
   G.kampf = [];
+  G.log.unshift("schlage");
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
-    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    G.log.unshift(schonDa.typ + " " + schonDa.farbe + " doppelt");
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
-    G.help = "Kampf gegen " + schonDa.typ + " " + schonDa.farbe;
+    G.log.unshift("Kampf gegen " + schonDa.typ + " " + schonDa.farbe);
     G.kampf[schonDa.besitzer] = schonDa;
     G.kampf[willHin.besitzer] = willHin;
     // Sieger bestimmen, Verlierer entfernen aus Armee
     if (willHin.gewinnt(schonDa)) {
       // gewonnen, schonDa muss weg
       G.schlacht.gestorben(feld);
+      G.log.unshift("found:"+ G.armeen[schonDa.besitzer].hat(schonDa) +" in "+G.armeen[schonDa.besitzer].farbe); 
       G.armeen[schonDa.besitzer].entferne(schonDa);
       G.schlacht.verschiebe(willHin, feld);  
-      G.help = willHin.farbe + " " + willHin.typ + " gewinnt " + feld;
+      G.log.unshift(willHin.farbe + " " + willHin.typ + " gewinnt " + feld);
     } else {
       // verloren, willHin abräumen aus Armee und Spielfeld 
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
-      G.armeen[player].entferne(willHin);
-      G.help = willHin.farbe + " " + willHin.typ + " verliert " + feld;
+      G.log.unshift("found:"+ G.armeen[willHin.besitzer].hat(willHin) +" in "+G.armeen[willHin.besitzer].farbe); 
+      G.armeen[willHin.besitzer].entferne(willHin);
+      G.log.unshift(willHin.farbe + " " + willHin.typ + " verliert " + feld);
     }
   } else {
     //TODO Feld ist frei => bewege
-    G.help = schonDa.typ + " ?bewege?";
+    G.log.unshift(schonDa.typ + " ?bewege?");
   }
 }
 
@@ -201,11 +206,24 @@ Armee.prototype.entferne = function(figur) {
     this.flagge = null;
     return f;
   } else if (figur.rang === 1) {
-    return this.soldaten.pop();
+    this.pos = this.soldaten.indexOf(figur);
+    this.toFind = figur;
+    if (this.pos > -1) {
+      this.tot = this.soldaten.splice(this.pos, 1);
+      if (this.tot[0]) return this.tot.pop();
+      else return this.tot;
+    } else {
+      this.unknownSoldier = this.figur;
+      return null;
+    }
   }
   else {
+    this.unknownRank = this.figur;
     return null;
   }
+}
+Armee.prototype.hat = function(figur) {
+  return this.soldaten.includes(figur);
 }
 
 Armee.prototype.mannStaerke = function(rang) {
