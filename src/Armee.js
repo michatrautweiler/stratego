@@ -80,6 +80,7 @@ export class Armee {
  }
  
  istAufgestellt() {
+   if (this.typ === "aktiv") return true;
    var anzahlMann = 0;
    for (var rang = 0; rang < this.gattungen().length; rang++) {
      anzahlMann += this.mannStaerke(rang);

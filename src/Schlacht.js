@@ -5,33 +5,34 @@ export class Schlacht {
     this.feld = new Array(dim * dim).fill(null);
   }
   
-  stelleAuf = function(figur, platz) {
+  stelleAuf(figur, platz) {
     this.feld[platz] = figur;
   }
   
-  holeFigur = function(platz) {   
+  holeFigur(platz) {   
     return this.feld[platz];
   }
   
-  groesse = function() {
+  groesse() {
     return this.feldGroesse;
   }
   
-  findeFigur = function(figur) {   
+  findeFigur(figur) {   
     return this.feld.indexOf(figur);
   }
   
-  verschiebe = function(figur, zuFeld) {
+  verschiebe(figur, zuFeld) {
     var vonFeld = this.findeFigur(figur);
     this.stelleAuf(figur, zuFeld);
     this.feld[vonFeld] = null;
   }
  
-  gestorben = function(platz) {
+  gestorben(platz) {
     this.feld[platz] = null;
   }
   
-  istErreichbar = function(figur, ziel) {
+  istErreichbar(figur, ziel) {
+   //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
    // nicht über Rand
@@ -43,5 +44,25 @@ export class Schlacht {
    if ((ziel - standort) === this.feldGroesse) return true;
    if ((ziel - standort) ===  (0 - this.feldGroesse)) return true;
    // TODO scout
+  }
+  
+  links(feld) {
+   if (feld % this.feldGroesse === 0) return -1;
+   else return feld - 1;
+  }
+  
+  rechts(feld) {
+   if (feld % this.feldGroesse === 3) return -1;
+   else return feld + 1;
+  }
+  
+  rauf(feld) {
+   if (feld < this.feldGroesse) return -1;
+   else return feld - this.feldGroesse;
+  }
+  
+  runter(feld) {
+   if (feld >= (this.feldGroesse * this.feldGroesse - this.feldGroesse)) return -1;
+   else return feld + this.feldGroesse;
   }
 }
