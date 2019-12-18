@@ -81,6 +81,8 @@ export class Spielbrett extends React.Component {
     // Schlachtfeld
     //
     let tbody = [];
+    let me = this.props.playerID;
+    if (!me) me = this.props.ctx.currentPlayer;
     let size = this.props.G.schlacht.groesse();
     for (let i = 0; i < size; i++) {
       let cells = [];
@@ -88,7 +90,10 @@ export class Spielbrett extends React.Component {
         const feldId = size * i + j;
         let f = this.props.G.schlacht.holeFigur(feldId);
         if (f) {
-          let png = "./figur" + f.rang + f.farbe + ".svg"; // cwd is folder public
+          let png = "./figurX" + f.farbe + ".svg"; // cwd is folder public
+          if (f.besitzer == me) { // typeof me is string
+            png = "./figur" + f.rang + f.farbe + ".svg";
+          }
           cells.push(
             <td
               key={feldId}
@@ -114,8 +119,6 @@ export class Spielbrett extends React.Component {
     //
     // deine Armee / Reserve
     //
-    let me = this.props.playerID;
-    if (!me) me = this.props.ctx.currentPlayer;
     let meineReserve = this.props.G.armeen[me];
     let farbe = meineReserve.farbe;
     let deck = [];
@@ -131,8 +134,9 @@ export class Spielbrett extends React.Component {
 		  let zeile = [];
 		  for (let rang = 0; rang < cols; rang++) {
 			if (meineReserve.mannStaerke(rang) > i) {
-			const feld = (size * size + size * i + rang) * (me + 1);
-			let png = "./figur" + rang + farbe + ".svg"; //TODO: remove rang from onClick
+			  const feld = (size * size + size * i + rang) * (me + 1);
+			  let png = "./figur" + rang + farbe + ".svg"; 
+			  
 			  zeile.push(
 				<td
 				  key={feld} class="deck"
@@ -141,7 +145,7 @@ export class Spielbrett extends React.Component {
 				>
 				   <img src={png} width="48" height="64" alt={png}/>
 				 </td>
-			  );
+			  ); //TODO: remove rang from onClick
 			} else {
 			  zeile.push(<td class="deck"/>);
 			}
@@ -150,7 +154,7 @@ export class Spielbrett extends React.Component {
 		}
     } // Aufstellen
     //
-    // gameover
+    // game controls & info
     //
     let winner = null;
     if (this.props.ctx.gameover) {
