@@ -63,16 +63,12 @@ export class Spielbrett extends React.Component {
     if (rang > -1) {
       // Klick auf Figur in Reserve / ausserhalb Spielbrett / Schlachtfeld
       // setzt Figur in Bewegung / wählt Figur aus
-      this.nehmeFigurAusReserve(rang, me);
+      this.figurInBewegung[me] = this.props.G.armeen[me].macheMobil(rang); 
     } 
   }
   
   bereit = () => {
     this.props.events.endStage();
-  }
-
-  nehmeFigurAusReserve = (rang, player) => {
-    this.figurInBewegung[player] = this.props.G.armeen[player].macheMobil(rang); 
   }
   
   isActive(id) {
@@ -153,11 +149,14 @@ export class Spielbrett extends React.Component {
 		  deck.push(<tr key={i}>{zeile}</tr>);
 		}
     } // Aufstellen
+    //
+    // gameover
+    //
     let winner = null;
     if (this.props.ctx.gameover) {
       winner =
         this.props.ctx.gameover.winner !== undefined ? (
-          <div id="winner">Gewinner ist {this.props.ctx.gameover.winner}!</div>
+          <div id="winner">{this.props.ctx.gameover.winner} gewinnt!</div>
         ) : (
             <div id="winner">Draw!</div>
           );

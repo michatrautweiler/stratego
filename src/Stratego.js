@@ -81,6 +81,7 @@ function platziere(G, ctx, willHin, feld, player) {
   } else if (schonDa) {
     G.log.unshift("besetzt von " + schonDa.typ + " " + schonDa.farbe); 
     //TODO: handle occupied fields
+    return;
   }
   var reservist = G.armeen[willHin.besitzer].entferne(willHin);
   if (reservist === willHin) { // verhindert doppeltes platzieren
@@ -137,9 +138,9 @@ function schlage(G, ctx, willHin, schonDa) {
     // Sieger bestimmen, Verlierer entfernen aus Armee
     if (willHin.gewinnt(schonDa)) {
       // gewonnen, schonDa muss weg
-      G.schlacht.gestorben(feld);
       G.armeen[schonDa.besitzer].entferne(schonDa);
       var feld = G.schlacht.findeFigur(schonDa);
+      G.schlacht.gestorben(feld); // FIXME: superfluous
       G.schlacht.verschiebe(willHin, feld);
       G.log.unshift(willHin.farbe + " " + willHin.typ + " gewinnt " + feld);
     } else {
@@ -160,133 +161,18 @@ function gebeAuf(G, ctx) {
   ctx.endTurn();
 }
 
+//
 // main
-//const anzahlSoldaten = 2;
-
+//
 var reserveRot = new Armee("rot", "reserve", 0);
 var reserveGelb = new Armee("gelb", "reserve", 1);
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 
-/* Figur
-function Figur(typ,farbe,rang, num, player) {
-  this.typ = typ;
-  this.farbe = farbe;
-  this.rang = rang;
-  this.num = num;
-  this.besitzer = player;
-}
-Figur.prototype.gewinnt = function(gegner) {
-  return this.rang > gegner.rang;
-  // TODO: draw, spy, miner
-}
-/*
-// Armee
-//
-function Armee(farbe, typ, player) {
-  this.typ = typ;
-  this.farbe = farbe;
-  this.flagge = new Figur("flagge",farbe,0,1, player);
-  this.soldaten = [];
-  for (var i=anzahlSoldaten; i>0; i--) {
-    var soldat = new Figur("soldat",farbe,1,i, player);
-    this.soldaten.unshift(soldat); // num=1 at [0]
-  }
-}
-  
-
-Armee.prototype.macheMobil = function(rang) {
-  if (rang === 0) {
-    return this.flagge;
-  }
-  else if (rang === 1) {
-    return this.soldaten[this.soldaten.length-1];  
-  } else return null;
-}
-Armee.prototype.entferne = function(figur) {
-  if (figur.rang === 0) {
-    var f = this.flagge;
-    this.flagge = null;
-    return f;
-  } else if (figur.rang === 1) {
-    var findByNum = function(soldat) {
-      return soldat.num === figur.num;
-    }
-    var tot = this.soldaten.find(findByNum);
-    if (!tot) {
-      this.unknownSoldier = this.figur;
-      return null;
-    } else {
-      // found! remove
-      var pos = this.soldaten.indexOf(tot);
-      this.entfernt = this.soldaten.splice(pos, 1);
-      return tot;
-    }
-  }
-  else {
-    this.unknownRank = this.figur;
-    return null;
-  }
-}
-Armee.prototype.hat = function(figur) {
-  return this.soldaten.includes(figur);
-}
-
-Armee.prototype.mannStaerke = function(rang) {
-  if (rang === 0) {
-    if (this.flagge === null) return 0; else return 1;
-  }
-  else if (rang === 1) {
-    return this.soldaten.length;
-  }
-  else return 0;
-}
-Armee.prototype.gattungen = function() {
-  return ["flagge","soldat"];
-}
-Armee.prototype.hinzu = function(figur) {
-  if (figur.rang === 0) {
-    this.flagge = figur;
-  }
-  else if (figur.rang === 1) {
-    var istGleicheFigur = function(soldat) {
-       return soldat.num === figur.num;
-    }
-    if (!this.soldaten.find(istGleicheFigur))
-    this.soldaten.push(figur);
-  }
-}*/
 
 //
-// Spielbrett
-/*
-function Schlachtfeld(dim) {
-  this.feldGroesse = dim;
-  this.feld = new Array(dim * dim).fill(null);
-}
-Schlachtfeld.prototype.stelleAuf = function(figur, platz) {
-  this.feld[platz] = figur;
-};
-Schlachtfeld.prototype.holeFigur = function(platz) {   
-  return this.feld[platz];
-};
-Schlachtfeld.prototype.groesse = function() {
-  return this.feldGroesse;
-};
-Schlachtfeld.prototype.findeFigur = function(figur) {   
-  return this.feld.indexOf(figur);
-};
-Schlachtfeld.prototype.verschiebe = function(figur, zuFeld) {
-  var vonFeld = this.findeFigur(figur);
-  this.stelleAuf(figur, zuFeld);
-  this.feld[vonFeld] = null;
-};
-Schlachtfeld.prototype.gestorben = function(platz) {
-  this.feld[platz] = null;
-};
-*/
-
 // game rules
+//
 function IsVictory(kampf) {
   if (!kampf) return;
   if (!kampf[0]) return;
