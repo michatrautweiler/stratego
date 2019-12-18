@@ -178,8 +178,9 @@ Figur.prototype.gewinnt = function(gegner) {
   return this.rang > gegner.rang;
   // TODO: draw, spy, miner
 }
-
+//
 // Armee
+//
 function Armee(farbe, typ, player) {
   this.typ = typ;
   this.farbe = farbe;
@@ -187,7 +188,7 @@ function Armee(farbe, typ, player) {
   this.soldaten = [];
   for (var i=anzahlSoldaten; i>0; i--) {
     var soldat = new Figur("soldat",farbe,1,i, player);
-    this.soldaten.push(soldat);
+    this.soldaten.unshift(soldat); // num=1 at [0]
   }
 }
   
@@ -206,15 +207,18 @@ Armee.prototype.entferne = function(figur) {
     this.flagge = null;
     return f;
   } else if (figur.rang === 1) {
-    this.pos = this.soldaten.indexOf(figur);
-    this.toFind = figur;
-    if (this.pos > -1) {
-      this.tot = this.soldaten.splice(this.pos, 1);
-      if (this.tot[0]) return this.tot.pop();
-      else return this.tot;
-    } else {
+    var findByNum = function(soldat) {
+      return soldat.num === figur.num;
+    }
+    var tot = this.soldaten.find(findByNum);
+    if (!tot) {
       this.unknownSoldier = this.figur;
       return null;
+    } else {
+      // found! remove
+      var pos = this.soldaten.indexOf(tot);
+      this.entfernt = this.soldaten.splice(pos, 1);
+      return tot;
     }
   }
   else {
