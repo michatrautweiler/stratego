@@ -1,11 +1,13 @@
 import { Figur }  from './Figur';
+import { Flagge }  from './Flagge';
+
 
 export class Armee {
 
   constructor(farbe, typ, player) {
     this.typ = typ;
     this.farbe = farbe;
-    this.flagge = new Figur("flagge",farbe,0,1, player);
+    this.flagge = new Flagge("flagge",farbe,0,1, player);
     this.soldaten = [];
     for (var i = this.anzahlSoldaten(); i>0; i--) {
       var soldat = new Figur("soldat",farbe,1,i, player);

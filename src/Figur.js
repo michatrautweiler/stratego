@@ -14,6 +14,6 @@ export class Figur {
   }
   
   istMobil() {
-    return this.rang > 0; 
+    return true; 
   }
 }
