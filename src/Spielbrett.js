@@ -40,7 +40,7 @@ export class Spielbrett extends React.Component {
           } else {
             // Feld ist besetzt
           }
-        } else {
+        } else if (willHin.istMobil()) {
           // Feld ist frei
           this.props.moves.bewege(willHin, feld, me);
         }
@@ -129,7 +129,7 @@ export class Spielbrett extends React.Component {
 	  var t = meineReserve.mannStaerke(k);
 	  if (t > rows) rows = t;
 	}
-    if (this.props.ctx.phase !== "Kampf") {
+    if (this.props.ctx.phase === "MobilMachung") {
 		for (let i = 0; i < rows; i++) {
 		  let zeile = [];
 		  for (let rang = 0; rang < cols; rang++) {

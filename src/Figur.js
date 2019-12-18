@@ -12,4 +12,8 @@ export class Figur {
     return this.rang > gegner.rang;
     // TODO: draw, spy, miner
   }
+  
+  istMobil() {
+    return this.rang > 0; 
+  }
 }
