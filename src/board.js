@@ -22,25 +22,38 @@ export class StrategoBoard extends React.Component {
   };
   figurInBewegung = { "0": null, "1": null };
 
-  onClick = (feld,rang) => {
+  onClick = (feld) => {
+    let me = this.props.playerID;
+    if (!me) me = this.props.ctx.currentPlayer;
+    var willHin = this.figurInBewegung[me];
+    if (willHin) {
+      // Figur die schon in Bewegung / in der Hand ist aufs Feld setzen
+      var schonDa = this.props.G.schlacht.holeFigur(feld);
+      if (schonDa === willHin) {
+        this.figurInBewegung[me] = null;
+        return; // avoid handling same event twice (once from each client)
+      }
+      if (this.props.ctx.phase === "Kampf") {
+        this.props.moves.bewege(willHin, feld, me);
+      } else {
+        this.props.moves.platziere(willHin, feld, me);
+      }
+      this.figurInBewegung[me] = null;
+    } else {
+      // Figur auf Feld in Bewegung setzen / in die Hand nehmen
+      this.figurInBewegung[me] = this.props.G.schlacht.holeFigur(feld);
+    }
+  };
+  
+  stelleAuf = (feld, rang) => {
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
     if (rang > -1) {
+      // Klick auf Figur in Reserve / ausserhalb Spielbrett / Schlachtfeld
+      // setzt Figur in Bewegung / wählt Figur aus
       this.nehmeFigurAusReserve(rang, me);
-    } else {
-      // Figur aus der Bewegung aufs Feld setzen
-      var willHin = this.figurInBewegung[me];
-      if (willHin) {
-        var schonDa = this.props.G.schlacht.holeFigur(feld);
-        if (schonDa === willHin) {
-          this.figurInBewegung[me] = null;
-          return; // avoid handling same event twice (once from each client)
-        }
-        this.props.moves.platziere(willHin, feld, me);
-        this.figurInBewegung[me] = null;
-      }
-    }
-  };
+    } 
+  }
   
   bereit = () => {
     this.props.events.endStage();
@@ -116,9 +129,9 @@ export class StrategoBoard extends React.Component {
 				<td
 				  key={feld} class="deck"
 				  //className={i===0 ? 'active' : ''}
-				  onClick={() => this.onClick(feld, rang)}
+				  onClick={() => this.stelleAuf(feld, rang)}
 				>
-				   {feld} <img src={png} width="48" height="64" alt={png}/>
+				   <img src={png} width="48" height="64" alt={png}/>
 				 </td>
 			  );
 			} else {

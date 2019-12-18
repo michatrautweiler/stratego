@@ -26,7 +26,7 @@ export const Stratego = {
       next: 'Kampf'
     },
     Kampf: { 
-      moves: bewegen, schlagen, aufgeben, 
+      moves: { bewege, schlage, gebeAuf }, 
       onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] }
     }
   }, /* TODO refactor G to players, secret for easy removal
@@ -76,7 +76,7 @@ export const Stratego = {
 function platziere(G, ctx, willHin, feld, player) {
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
-    G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
     G.help = "besetzt von " + schonDa.typ + " " + schonDa.farbe; 
@@ -87,9 +87,9 @@ function platziere(G, ctx, willHin, feld, player) {
     G.schlacht.stelleAuf(willHin, feld);  
     G.help = willHin.farbe + " " + willHin.typ + " auf " + feld;
     if (reservist.farbe === "rot") {
-      armeeRot.hinzu(willHin, feld);
+      armeeRot.hinzu(willHin);
     } else {
-      armeeGelb.hinzu(willHin, feld);        
+      armeeGelb.hinzu(willHin);        
     }
   }
 }
@@ -107,27 +107,27 @@ function bereitZurSchlacht(G, ctx) {
   }
 }
 
-function bewegen(G, ctx) {
+function bewege(G, ctx, willHin, feld, player) {
+  platziere(G, ctx, willHin, feld, player);
+}
+
+function schlage(G, ctx) {
 
 }
 
-function schlagen(G, ctx) {
-
-}
-
-function aufgeben(G, ctx) {
+function gebeAuf(G, ctx) {
   G.help = G.armeen[ctx.currentPlayer] + " gibt auf!";
   G.armeen[ctx.currentPlayer] = null;
   ctx.endTurn();
 }
 
 // main
-const anzahlSoldaten = 4;
+const anzahlSoldaten = 1;
 
-var reserveRot = new Armee("rot");
-var reserveGelb = new Armee("gelb");
-var armeeRot = new Armee("rot");
-var armeeGelb = new Armee("gelb");
+var reserveRot = new Armee("rot", "reserve");
+var reserveGelb = new Armee("gelb", "reserve");
+var armeeRot = new Armee("rot", "aktiv");
+var armeeGelb = new Armee("gelb", "aktiv");
 
 // Figur
 function Figur(typ,farbe,rang, num) {
@@ -138,7 +138,8 @@ function Figur(typ,farbe,rang, num) {
 }
 
 // Armee
-function Armee(farbe) {
+function Armee(farbe, typ) {
+  this.typ = typ;
   this.farbe = farbe;
   this.flagge = new Figur("flagge",farbe,0,1);
   this.soldaten = [];
@@ -182,7 +183,7 @@ Armee.prototype.mannStaerke = function(rang) {
 Armee.prototype.gattungen = function() {
   return ["flagge","soldat"];
 }
-Armee.prototype.hinzu = function(figur, id) {
+Armee.prototype.hinzu = function(figur) {
   if (figur.rang === 0) {
     this.flagge = figur;
   }
