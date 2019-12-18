@@ -1,8 +1,12 @@
+import { Armee }  from './Armee';
+import { Schlacht }  from './Schlacht';
+
+
 export const Stratego = {
   setup: () => ({ 
     log: Array(1),
     help: "Los! Wähle eine Figur deiner Armee.",
-    schlacht: new Schlachtfeld(4),
+    schlacht: new Schlacht(4),
     armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
   }),
@@ -157,14 +161,14 @@ function gebeAuf(G, ctx) {
 }
 
 // main
-const anzahlSoldaten = 2;
+//const anzahlSoldaten = 2;
 
 var reserveRot = new Armee("rot", "reserve", 0);
 var reserveGelb = new Armee("gelb", "reserve", 1);
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 
-// Figur
+/* Figur
 function Figur(typ,farbe,rang, num, player) {
   this.typ = typ;
   this.farbe = farbe;
@@ -176,7 +180,7 @@ Figur.prototype.gewinnt = function(gegner) {
   return this.rang > gegner.rang;
   // TODO: draw, spy, miner
 }
-//
+/*
 // Armee
 //
 function Armee(farbe, typ, player) {
@@ -251,11 +255,11 @@ Armee.prototype.hinzu = function(figur) {
     if (!this.soldaten.find(istGleicheFigur))
     this.soldaten.push(figur);
   }
-}
+}*/
 
 //
 // Spielbrett
-//
+/*
 function Schlachtfeld(dim) {
   this.feldGroesse = dim;
   this.feld = new Array(dim * dim).fill(null);
@@ -280,7 +284,7 @@ Schlachtfeld.prototype.verschiebe = function(figur, zuFeld) {
 Schlachtfeld.prototype.gestorben = function(platz) {
   this.feld[platz] = null;
 };
-
+*/
 
 // game rules
 function IsVictory(kampf) {

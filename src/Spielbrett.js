@@ -8,9 +8,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import './board.css';
+import './Spielbrett.css';
 
-export class StrategoBoard extends React.Component {
+export class Spielbrett extends React.Component {
   static propTypes = {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,

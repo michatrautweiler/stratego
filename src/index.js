@@ -3,16 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Client } from 'boardgame.io/react';
 import { Local } from 'boardgame.io/multiplayer';
-import { Stratego}  from './App';
-import { StrategoBoard } from "./board";
+import { Stratego}  from './Stratego';
+import { Spielbrett } from "./Spielbrett";
 import * as serviceWorker from './serviceWorker';
 
 // single player
-//const StrategoClient = Client({ game: Stratego, board: StrategoBoard });
+//const StrategoClient = Client({ game: Stratego, board: Spielbrett });
 
 // bot
 /*
-const App = Client({ game: Stratego, board: StrategoBoard, 
+const App = Client({ game: Stratego, board: Spielbrett, 
   ai: {
     enumerate: (G, ctx) => {
       let moves = [];
@@ -33,7 +33,7 @@ const App = Client({ game: Stratego, board: StrategoBoard,
 // multi player, local
 const StrategoClient = Client({
   game: Stratego,
-  board: StrategoBoard,
+  board: Spielbrett,
   multiplayer: Local()
 });
 
