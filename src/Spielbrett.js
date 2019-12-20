@@ -62,14 +62,12 @@ export class Spielbrett extends React.Component {
     }
   };
   
-  stelleAuf = (feld, rang) => {
+  stelleAuf = (gattung) => {
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
-    if (rang > -1) {
-      // Klick auf Figur in Reserve / ausserhalb Spielbrett / Schlachtfeld
-      // setzt Figur in Bewegung / wÃ¤hlt Figur aus
-      this.figurInBewegung[me] = this.props.G.armeen[me].macheMobil(rang); 
-    } 
+    // Klick auf Figur in Reserve / ausserhalb Spielbrett / Schlachtfeld
+    // setzt Figur in Bewegung / wŠhlt Figur aus
+    this.figurInBewegung[me] = this.props.G.armeen[me].macheMobil(gattung);  
   }
   
   bereit = () => {
@@ -97,17 +95,17 @@ export class Spielbrett extends React.Component {
         const feldId = size * i + j;
         let f = this.props.G.schlacht.holeFigur(feldId);
         if (f) {
-          let png = "./figurX" + f.farbe + ".svg"; // cwd is folder public
+          let png = "./figur_hidden_" + f.farbe + ".svg"; // cwd is folder public
         
           if (f.besitzer == me) { // typeof me is string
-            png = "./figur" + f.rang + f.farbe + ".svg";
+            png = "./figur_" + f.gattung + "_" + f.farbe + ".svg";
           } else if (   this.props.G.kampf 
                      && this.props.G.kampf[notMe]
                      && f.equals(this.props.G.kampf[notMe])
                     ) 
           {
             // reveal figure of opponent after fight  
-            png = "./figur" + f.rang + f.farbe + ".svg";
+            png = "./figur_" + f.gattung + "_" + f.farbe + ".svg";
           }
           cells.push(
             <td
@@ -140,32 +138,35 @@ export class Spielbrett extends React.Component {
     let deck = [];
     let reserven = [];
 	let rows = 0;
-	let cols = meineReserve.gattungen().length;
-
-	for (let k=0; k < cols; k++) {
-	  var t = meineReserve.mannStaerke(k);
+    var cols;
+	for (cols of meineReserve.gattungen()) {
+	  var t = meineReserve.mannStaerke(cols);
 	  if (t > rows) rows = t;
 	}
     if (this.props.ctx.phase === "MobilMachung") {
 	  for (let i = 0; i < rows; i++) {
 		let zeile = [];
-		for (let rang = 0; rang < cols; rang++) {
-		  if (meineReserve.mannStaerke(rang) > i) {
-			const feld = (size * size + size * i + rang) * (me + 1);
-			let png = "./figur" + rang + farbe + ".svg"; 
+		var gattung;
+		var j=0;
+		for (gattung of meineReserve.gattungen()) {
+		  if (meineReserve.mannStaerke(gattung) > i) {
+			const feld = (size * size + size * i + j) * (me + 1);
+			const art = gattung;
+			let png = "./figur_" + art + "_" + farbe + ".svg"; 
 			  
 			zeile.push(
 			  <td
 				key={feld} class="deck"
 				//className={i===0 ? 'active' : ''}
-			    onClick={() => this.stelleAuf(feld, rang)}
+			    onClick={() => this.stelleAuf(art)}
 			  >
 			    <img src={png} width="48" height="64" alt={png}/>
 			  </td>
-		    ); //TODO: remove rang from onClick
+		    );
 		  } else {
 		    zeile.push(<td class="deck"/>);
 	      }
+	      j++;
 	    }
 	    deck.push(<tr key={i}>{zeile}</tr>);
 	  }
@@ -194,7 +195,7 @@ export class Spielbrett extends React.Component {
         <table id="deckGelb">
           <tbody>{reserven[0]}</tbody>
         </table>
-        <table width="300" id="board">
+        <table width="400" id="board">
           <tbody>{tbody}</tbody>
         </table>
         <table id="deckRot">

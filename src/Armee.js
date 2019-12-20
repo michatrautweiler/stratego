@@ -1,5 +1,6 @@
 import { Figur }  from './Figur';
 import { Flagge }  from './Flagge';
+import { Bombe }  from './Bombe';
 
 
 export class Armee {
@@ -13,43 +14,67 @@ export class Armee {
       var soldat = new Figur("soldat",farbe,1,i, player);
       this.soldaten.unshift(soldat); // num=1 at [0]
     }
+    this.bomben = [];
+    for (i = this.anzahlBomben(); i>0; i--) {
+      var bombe = new Bombe("bombe",farbe,"B",i, player);
+      this.bomben.unshift(bombe); // num=1 at [0]
+    }
   }
   
-  anzahlSoldaten() { return 2; }
+  anzahlSoldaten() { return 3; }
+  anzahlBomben() { return 2; }
   
-  macheMobil(rang) {
-    if (rang === 0) {
+  gattungen() {
+    return ["flagge","soldat","bombe"];
+  }
+  
+  macheMobil(gattung) {
+    if (gattung === "flagge") {
       return this.flagge;
-    } else if (rang === 1) {
+    } else if (gattung === "soldat") {
       return this.soldaten[this.soldaten.length-1];  
+    } else if (gattung === "bombe") {
+      return this.bomben[this.bomben.length-1];
     } else return null;
   }
   
   entferne(figur) {
-  if (figur.rang === 0) {
-    var f = this.flagge;
-    this.flagge = null;
-    return f;
-  } else if (figur.rang === 1) {
+    // suchfunktion
     var findByNum = function(soldat) {
       return soldat.num === figur.num;
     }
-    var tot = this.soldaten.find(findByNum);
-    if (!tot) {
-      this.unknownSoldier = this.figur;
-      return null;
+    
+    if (figur.rang === 0) {
+      var f = this.flagge;
+      this.flagge = null;
+      return f;
+    } else if (figur.rang === 1) {
+      var tot = this.soldaten.find(findByNum);
+      if (!tot) {
+        this.unknownSoldat = this.figur;
+        return null;
+      } else {
+        // found! remove
+        var pos = this.soldaten.indexOf(tot);
+        this.entfernt = this.soldaten.splice(pos, 1);
+        return tot;
+      }
+    } else if (figur.rang === "B") {
+      var tot = this.bomben.find(findByNum);
+      if (!tot) {
+        this.unknownBomb = this.figur;
+        return null;
+      } else {
+        // found! remove
+        var pos = this.bomben.indexOf(tot);
+        this.entfernt = this.bomben.splice(pos, 1);
+        return tot;
+      }
     } else {
-      // found! remove
-      var pos = this.soldaten.indexOf(tot);
-      this.entfernt = this.soldaten.splice(pos, 1);
-      return tot;
+      this.unknownRank = this.figur;
+      return null;
     }
   }
-  else {
-    this.unknownRank = this.figur;
-    return null;
-  }
-}
   
   istKampfUnfaehig() {
     // hat Flagge verloren
@@ -72,40 +97,44 @@ export class Armee {
     return figuren;
   }
 
-  mannStaerke(rang) {
-  if (rang === 0) {
-    if (this.flagge === null) return 0; else return 1;
-  }
-  else if (rang === 1) {
-    return this.soldaten.length;
-  }
-  else return 0;
-}
-
-  gattungen() {
-  return ["flagge","soldat"];
+  mannStaerke(gattung) {
+    if (gattung === "flagge") {
+      if (this.flagge === null) return 0; else return 1;
+    }
+    else if (gattung === "soldat") {
+      return this.soldaten.length;
+    } else if (gattung === "bombe") {
+      return this.bomben.length;
+    }
+    else return 0;
 }
   
 
   hinzu(figur) {
-  if (figur.rang === 0) {
-    this.flagge = figur;
-  }
-  else if (figur.rang === 1) {
+    // suchfunktion
     var istGleicheFigur = function(soldat) {
-       return soldat.num === figur.num;
+      return soldat.num === figur.num;
     }
-    if (!this.soldaten.find(istGleicheFigur))
-    this.soldaten.push(figur);
+    
+    if (figur.rang === 0) {
+      this.flagge = figur;
+    }
+    else if (figur.rang === 1) {
+      if (!this.soldaten.find(istGleicheFigur))
+      this.soldaten.push(figur);
+    } else if (figur.rang === "B") {
+      if (!this.bomben.find(istGleicheFigur))
+      this.bomben.push(figur);
+    }
   }
- }
  
- istAufgestellt() {
-   if (this.typ === "aktiv") return true;
-   var anzahlMann = 0;
-   for (var rang = 0; rang < this.gattungen().length; rang++) {
-     anzahlMann += this.mannStaerke(rang);
-   }
-   return anzahlMann === 0;
- }
+  istAufgestellt() {
+    if (this.typ === "aktiv") return true;
+    var anzahlMann = 0;
+    var gattung;
+    for (gattung of this.gattungen()) {
+      anzahlMann += this.mannStaerke(gattung);
+    }
+    return anzahlMann === 0;
+  }
 }

@@ -6,7 +6,7 @@ export const Stratego = {
   setup: () => ({ 
     log: Array(1),
     help: "Los! Wähle eine Figur deiner Armee.",
-    schlacht: new Schlacht(4),
+    schlacht: new Schlacht(6),
     armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
   }),
@@ -121,12 +121,12 @@ function schlage(G, ctx, willHin, schonDa) {
     G.log.unshift("Kampf gegen " + schonDa.typ + " " + schonDa.farbe);
     G.kampf[schonDa.besitzer] = schonDa;
     G.kampf[willHin.besitzer] = willHin;
+    var feld = G.schlacht.findeFigur(schonDa);
     // Sieger bestimmen, Verlierer entfernen aus Armee
     var sieger = willHin.schlage(schonDa);
     if (sieger > 0) {
       // gewonnen, schonDa muss weg
       G.armeen[schonDa.besitzer].entferne(schonDa);
-      var feld = G.schlacht.findeFigur(schonDa);
       G.schlacht.gestorben(feld); // FIXME: superfluous
       G.schlacht.verschiebe(willHin, feld);
       G.log.unshift(willHin.farbe + " " + willHin.typ + " gewinnt " + feld);
@@ -138,7 +138,6 @@ function schlage(G, ctx, willHin, schonDa) {
     } else {
       // kein Sieger
       G.armeen[schonDa.besitzer].entferne(schonDa);
-      var feld = G.schlacht.findeFigur(schonDa);
       G.schlacht.gestorben(feld);
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
       G.armeen[willHin.besitzer].entferne(willHin);
@@ -165,15 +164,3 @@ var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 
 
-//
-// game rules
-//
-function IsVictory(kampf) {
-  if (!kampf) return;
-  if (!kampf[0]) return;
-  if (!kampf[1]) return;
-  
-  // Flagge ist im Kampf 
-  if (kampf[0].rang === 0) return true;
-  if (kampf[1].rang === 0) return true;
-}
