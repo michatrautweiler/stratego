@@ -18,7 +18,20 @@ export class Schlacht {
   }
   
   findeFigur(figur) {   
-    return this.feld.indexOf(figur);
+    var i = this.feld.indexOf(figur);
+    if (i < 0) {
+      // suchfunktion
+      var sucheIndex = function(index, inhalt) {
+        if (figur.equals(inhalt)) {
+          i = index;
+        }
+      }
+      this.feld.forEach(sucheIndex);
+      if (i < 0) this.unknownFigure = figur;
+      else return i;
+    } else {
+      return i;
+    }
   }
   
   verschiebe(figur, zuFeld) {

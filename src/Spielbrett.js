@@ -42,7 +42,7 @@ export class Spielbrett extends React.Component {
         if (this.props.G.schlacht.istErreichbar(willHin, feld)) {
           if (schonDa) {
             if (schonDa.besitzer !== willHin.besitzer) {
-              this.props.moves.schlage(willHin, schonDa);
+              this.props.moves.schlage(willHin, schonDa, feld);
             } else {
               // Feld ist besetzt
             }
