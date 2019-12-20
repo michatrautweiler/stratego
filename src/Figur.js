@@ -8,8 +8,8 @@ export class Figur {
     this.besitzer = player;
   }
 
-  gewinnt(gegner) {
-    return this.rang > gegner.rang;
+  schlage(gegner) {
+    return this.rang - gegner.rang;
     // TODO: draw, spy, miner
   }
   

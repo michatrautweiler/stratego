@@ -122,18 +122,27 @@ function schlage(G, ctx, willHin, schonDa) {
     G.kampf[schonDa.besitzer] = schonDa;
     G.kampf[willHin.besitzer] = willHin;
     // Sieger bestimmen, Verlierer entfernen aus Armee
-    if (willHin.gewinnt(schonDa)) {
+    var sieger = willHin.schlage(schonDa);
+    if (sieger > 0) {
       // gewonnen, schonDa muss weg
       G.armeen[schonDa.besitzer].entferne(schonDa);
       var feld = G.schlacht.findeFigur(schonDa);
       G.schlacht.gestorben(feld); // FIXME: superfluous
       G.schlacht.verschiebe(willHin, feld);
       G.log.unshift(willHin.farbe + " " + willHin.typ + " gewinnt " + feld);
-    } else {
+    } else if (sieger < 0){
       // verloren, willHin abräumen aus Armee und Spielfeld 
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
       G.armeen[willHin.besitzer].entferne(willHin);
       G.log.unshift(willHin.farbe + " " + willHin.typ + " verliert ");
+    } else {
+      // kein Sieger
+      G.armeen[schonDa.besitzer].entferne(schonDa);
+      var feld = G.schlacht.findeFigur(schonDa);
+      G.schlacht.gestorben(feld);
+      G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
+      G.armeen[willHin.besitzer].entferne(willHin);
+      G.log.unshift(feld + " beide verlieren");
     }
   } else {
     //TODO Feld ist frei => bewege
