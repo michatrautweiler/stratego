@@ -23,13 +23,13 @@ export const Stratego = {
           }
         }
       },
-      start: true, onBegin: (G,ctx) => { G.log.unshift("Los geht's!")},
+      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armee bereit!")},
       endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
     },
     Kampf: { 
       moves: { bewege, schlage, gebeAuf }, 
-      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] },
+      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]; G.log.unshift("Auf in den Kampf!") },
       turn: { moveLimit: 1 }
     }
   }, /* TODO refactor G to players, secret for easy removal
@@ -78,7 +78,7 @@ function platziere(G, ctx, willHin, feld, player) {
     // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
-    G.log.unshift("besetzt von " + schonDa.typ + " " + schonDa.farbe); 
+    G.log.unshift("besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
     //TODO: handle occupied fields
     return;
   }
