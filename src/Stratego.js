@@ -125,21 +125,21 @@ function schlage(G, ctx, willHin, schonDa, feld) {
     var sieger = willHin.schlage(schonDa);
     if (sieger > 0) {
       // gewonnen, schonDa muss weg
-      G.armeen[schonDa.besitzer].entferne(schonDa);
-      //G.schlacht.gestorben(feld); // FIXME: superfluous
+      G.schlacht.gestorben(feld); // FIXME: superfluous
       G.schlacht.verschiebe(willHin, feld);
+      G.armeen[schonDa.besitzer].entferne(schonDa);
       G.log.unshift(feld + ": " + willHin.gattung + " " + willHin.farbe + " gewinnt ");
-    } else if (sieger < 0){
+    } else if (sieger < 0) {
       // verloren, willHin abräumen aus Armee und Spielfeld 
-      G.armeen[willHin.besitzer].entferne(willHin);
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
-      G.log.unshift(feld + ": "+ willHin.farbe + " verliert ");
+      G.armeen[willHin.besitzer].entferne(willHin);
+      G.log.unshift(feld + ": "+ willHin.gattung + " " + willHin.farbe + " verliert ");
     } else {
       // kein Sieger
-      G.armeen[schonDa.besitzer].entferne(schonDa);
-      G.armeen[willHin.besitzer].entferne(willHin);
       G.schlacht.gestorben(feld);
       G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
+      G.armeen[schonDa.besitzer].entferne(schonDa);
+      G.armeen[willHin.besitzer].entferne(willHin);
       G.log.unshift(feld + ": beide verlieren");
     }
   } else {

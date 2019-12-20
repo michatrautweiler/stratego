@@ -6,6 +6,7 @@ export class Schlacht {
   }
   
   stelleAuf(figur, platz) {
+    if (platz < 0 || platz > this.feld.length) { this.nirvana = figur; }
     this.feld[platz] = figur;
   }
   
@@ -22,7 +23,7 @@ export class Schlacht {
     if (i < 0) {
       // suchfunktion
       var sucheIndex = function(index, inhalt) {
-        if (figur.equals(inhalt)) {
+        if (i < 0 && figur.equals(inhalt)) {
           i = index;
         }
       }
