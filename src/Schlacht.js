@@ -49,24 +49,26 @@ export class Schlacht {
     this.feld[platz] = null;
   }
   
-  istAufstellbar(figur, feld) {
+  istAufstellbar(figur, platz) {
     if (!figur) return false;
+    if (this.feld[platz]) return false;
     var dmz = 2* this.feldGroesse;
-    var max = this.feldGroesse * this.feldGroesse;
     if (figur.besitzer === 0) {
-      return 2*feld < max - dmz;
+      return 2*platz < this.anzahlFelder() - dmz;
     } else {
-      return 2*feld >= max + dmz;
+      return 2*platz >= this.anzahlFelder() + dmz;
     }
   }
   
   istErreichbar(figur, ziel) {
+   if (ziel < 0) return false;
+   if (ziel >= this.anzahlFelder()) return false; 
    //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
    // nicht über Rand
-   if ((ziel - standort) === 1 && (ziel % this.feldGroesse == 0)) return false;
-   if ((ziel - standort) === -1 && (standort % this.feldGroesse == 0)) return false;
+   if ((ziel - standort) === 1 && (ziel % this.feldGroesse === 0)) return false;
+   if ((ziel - standort) === -1 && (standort % this.feldGroesse === 0)) return false;
    // 1 Feld weit
    if ((ziel - standort) === 1) return true;
    if ((ziel - standort) === -1) return true;
@@ -81,7 +83,7 @@ export class Schlacht {
   }
   
   rechts(feld) {
-   if (feld % this.feldGroesse === 3) return -1;
+   if (feld % this.feldGroesse === (this.feldGroesse-1)) return -1;
    else return feld + 1;
   }
   
@@ -91,7 +93,7 @@ export class Schlacht {
   }
   
   runter(feld) {
-   if (feld >= (this.feldGroesse * this.feldGroesse - this.feldGroesse)) return -1;
+   if (feld >= (this.anzahlFelder() - this.feldGroesse)) return -1;
    else return feld + this.feldGroesse;
   }
 }

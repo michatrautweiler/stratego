@@ -27,24 +27,42 @@ const App = Client({ game: Stratego, board: Spielbrett,
           }
         };
         G.armeen[1].ada().forEach(platziereFigur);
-         
       } 
-      
       else {
         // phase Kampf
-        for (var feld=0; feld < G.schlacht.groesse(); feld++) {
+        for (var feld=0; feld < G.schlacht.anzahlFelder(); feld++) {
           var figur = G.schlacht.holeFigur(feld);
-          if (figur && (figur.besitzer === 1) && figur.istMobil()) {
+          if (figur && (figur.besitzer === 1)) {
             // bewege meine Figur
+            var schonDa;
             var ziel = G.schlacht.rechts(feld);
-            if (ziel >= 0) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+            if (G.schlacht.istErreichbar(figur,ziel)) {
+              schonDa = G.schlacht.holeFigur(ziel);
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+            }
+            
             ziel = G.schlacht.links(feld);
-            if (ziel >= 0) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+            if (G.schlacht.istErreichbar(figur,ziel)) {
+              schonDa = G.schlacht.holeFigur(ziel);
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+            }
+            
             ziel = G.schlacht.rauf(feld);
-            if (ziel >= 0) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+            if (G.schlacht.istErreichbar(figur,ziel)) {
+              schonDa = G.schlacht.holeFigur(ziel);
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+            }
+            
             ziel = G.schlacht.runter(feld);
-            if (ziel >= 0) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
-          }
+            if (G.schlacht.istErreichbar(figur,ziel)) {
+              schonDa = G.schlacht.holeFigur(ziel);
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+            }
+          } 
         }
       }
       return moves;

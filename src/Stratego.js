@@ -4,8 +4,7 @@ import { Schlacht }  from './Schlacht';
 
 export const Stratego = {
   setup: () => ({ 
-    log: Array(1),
-    help: "Los! Wähle eine Figur deiner Armee.",
+    log: [],
     schlacht: new Schlacht(6),
     armeen: [reserveRot, reserveGelb],
     kampf: Array(2).fill(null)
@@ -24,13 +23,14 @@ export const Stratego = {
           }
         }
       },
-      start: true, 
+      start: true, onBegin: (G,ctx) => { G.log.unshift("Los geht's!")},
       endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
     },
     Kampf: { 
       moves: { bewege, schlage, gebeAuf }, 
-      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] }
+      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb] },
+      turn: { moveLimit: 1 }
     }
   }, /* TODO refactor G to players, secret for easy removal
   playerView: (G, ctx, playerID) => {
@@ -85,7 +85,7 @@ function platziere(G, ctx, willHin, feld, player) {
   var reservist = G.armeen[willHin.besitzer].entferne(willHin);
   if (reservist === willHin) { // verhindert doppeltes platzieren
     G.schlacht.stelleAuf(willHin, feld);  
-    G.log.unshift(willHin.farbe + " " + willHin.gattung + " auf " + feld);
+    G.log.unshift(feld + ": platziert " + willHin.gattung + " " + willHin.farbe);
     if (reservist.farbe === "rot") {
       armeeRot.hinzu(willHin);
     } else {
@@ -96,10 +96,8 @@ function platziere(G, ctx, willHin, feld, player) {
 
 function bewege(G, ctx, willHin, feld, player) {
   G.kampf = [];
-  G.log.unshift(feld + ": bewege " + willHin.gattung + " " + willHin.farbe);
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
-    //G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
     G.log.unshift(feld + ": besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
@@ -107,7 +105,7 @@ function bewege(G, ctx, willHin, feld, player) {
   } else {
     // Feld ist frei
     G.schlacht.verschiebe(willHin, feld);  
-    G.log.unshift(willHin.farbe + " " + willHin.gattung + " auf " + feld);
+    G.log.unshift(feld + ": bewege " + willHin.gattung + " " + willHin.farbe);
   }
 }
 
