@@ -85,7 +85,7 @@ function platziere(G, ctx, willHin, feld, player) {
   var reservist = G.armeen[willHin.besitzer].entferne(willHin);
   if (reservist === willHin) { // verhindert doppeltes platzieren
     G.schlacht.stelleAuf(willHin, feld);  
-    G.help = willHin.farbe + " " + willHin.gattung + " auf " + feld;
+    G.log.unshift(willHin.farbe + " " + willHin.gattung + " auf " + feld);
     if (reservist.farbe === "rot") {
       armeeRot.hinzu(willHin);
     } else {

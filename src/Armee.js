@@ -27,9 +27,9 @@ export class Armee {
     }
   }
   
-  anzahlSoldaten() { return 2; }
+  anzahlSoldaten() { return 1; }
   anzahlBomben() { return 1; }
-  anzahlMineure() { return 2; }
+  anzahlMineure() { return 1; }
   
   gattungen() {
     return ["flagge","soldat","bombe","mineur"];
@@ -114,6 +114,7 @@ export class Armee {
     var figuren = [];
     figuren.push(this.flagge);
     figuren = figuren.concat(this.soldaten);
+    figuren = figuren.concat(this.bomben);
     figuren = figuren.concat(this.mineure);
     return figuren;
   }

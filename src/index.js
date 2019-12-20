@@ -18,24 +18,21 @@ const App = Client({ game: Stratego, board: Spielbrett,
       let moves = [];
       if (!G.armeen[1].istAufgestellt()) {
         // phase MobilMachung
-        var flagge = G.armeen[1].macheMobil(0);
-        moves.push({ move: 'platziere', args: [flagge, 0, 1] });
-        var soldat1 = G.armeen[1].macheMobil(1);
-        moves.push({ move: 'platziere', args: [soldat1, 1, 1] });
-        var soldat2 = G.armeen[1].macheMobil(1);
-        moves.push({ move: 'platziere', args: [soldat2, 4, 1] });
-      }
-      for (var rang=0; rang < G.armeen[1].gattungen().length; rang++) {
-        if (G.armeen[1].mannStaerke(rang)) {
-          var figur = G.armeen[1].macheMobil(rang);
-          for (var feld=0; feld < G.schlacht.groesse; feld++) {
-            moves.push({ move: 'platziere', args: [figur, feld, 1] });
+        // alle AdA, alle felder
+        var platziereFigur = function(figur) {
+          for (var platz = 0; platz < G.schlacht.groesse(); platz++) {
+            //if (figur && G.schlacht.istAufstellbar(figur, platz)) {
+              moves.push({ move: 'platziere', args: [figur, platz, 1] });
+            //}
           }
-        }
-      }
+        };
+        G.armeen[1].ada().forEach(platziereFigur);
+         
+      } 
+      
       else {
         // phase Kampf
-        for (var feld=0; feld < G.schlacht.groesse; feld++) {
+        for (var feld=0; feld < G.schlacht.groesse(); feld++) {
           var figur = G.schlacht.holeFigur(feld);
           if (figur && (figur.besitzer === 1) && figur.istMobil()) {
             // bewege meine Figur
