@@ -31,6 +31,16 @@ export class Schlacht {
     this.feld[platz] = null;
   }
   
+  istAufstellbar(figur, feld) {
+    var dmz = 2* this.feldGroesse;
+    var max = this.feldGroesse * this.feldGroesse;
+    if (figur.besitzer === 0) {
+      return 2*feld < max - dmz;
+    } else {
+      return 2*feld >= max + dmz;
+    }
+  }
+  
   istErreichbar(figur, ziel) {
    //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;

@@ -33,7 +33,12 @@ export class Spielbrett extends React.Component {
         this.figurInBewegung[me] = null;
         return; // avoid handling same event twice (once from each client)
       }
-      if (this.props.ctx.phase === "Kampf") {
+      if (this.props.ctx.phase === "MobilMachung") {
+        if (this.props.G.schlacht.istAufstellbar(willHin, feld))
+        this.props.moves.platziere(willHin, feld, me);
+
+      } else {
+        // Kampf
         if (this.props.G.schlacht.istErreichbar(willHin, feld)) {
           if (schonDa) {
             if (schonDa.besitzer !== willHin.besitzer) {
@@ -45,9 +50,7 @@ export class Spielbrett extends React.Component {
             // Feld ist frei
             this.props.moves.bewege(willHin, feld, me);
           }
-        } // erreichbar
-      } else {
-        this.props.moves.platziere(willHin, feld, me);
+        } // erreichbar        
       }
       this.figurInBewegung[me] = null;
     } else {
@@ -135,6 +138,7 @@ export class Spielbrett extends React.Component {
     let meineReserve = this.props.G.armeen[me];
     let farbe = meineReserve.farbe;
     let deck = [];
+    let reserven = [];
 	let rows = 0;
 	let cols = meineReserve.gattungen().length;
 
@@ -165,6 +169,8 @@ export class Spielbrett extends React.Component {
 	    }
 	    deck.push(<tr key={i}>{zeile}</tr>);
 	  }
+	  reserven[me] = deck;
+	  reserven[notMe] = null;
       info = <i>dein Gegner ist am aufstellen seiner Figuren...</i>;
       if (this.props.G.armeen[0].istAufgestellt()) {
         info =  <b>dein Gegner wartet bis du alle Figuren aufgestellt hast!</b>;
@@ -185,11 +191,14 @@ export class Spielbrett extends React.Component {
     
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
+        <table id="deckGelb">
+          <tbody>{reserven[0]}</tbody>
+        </table>
         <table width="300" id="board">
           <tbody>{tbody}</tbody>
         </table>
-        <table id="deck">
-          <tbody>{deck}</tbody>
+        <table id="deckRot">
+          <tbody>{reserven[1]}</tbody>
         </table>
         <p>{info}</p>
         {winner}
