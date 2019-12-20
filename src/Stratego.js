@@ -148,8 +148,8 @@ function schlage(G, ctx, willHin, schonDa, feld) {
 
 function gebeAuf(G, ctx) {
   G.help = G.armeen[ctx.currentPlayer] + " gibt auf!";
-  G.armeen[ctx.currentPlayer].entferne(0);
-  ctx.endTurn();
+  G.armeen[ctx.currentPlayer].flagge = null;
+  ctx.events.endTurn();
 }
 
 //

@@ -93,7 +93,10 @@ export class Spielbrett extends React.Component {
     this.props.moves.platziere(armee.soldaten[2], 10, me);
     this.props.moves.platziere(armee.soldaten[1], 11, me);
     this.props.moves.platziere(armee.soldaten[0], 2, me);
-
+  }
+  
+  aufgeben() {
+    this.props.moves.gebeAuf();
   }
 
   render() {
@@ -150,6 +153,8 @@ export class Spielbrett extends React.Component {
     // deine Armee / Reserve
     //
     let info = null;
+    let btn = <button onClick={() => this.aufgeben()}>ich geb auf!</button>;
+    
     let meineReserve = this.props.G.armeen[me];
     let farbe = meineReserve.farbe;
     let deck = [];
@@ -193,6 +198,8 @@ export class Spielbrett extends React.Component {
       if (this.props.G.armeen[0].istAufgestellt()) {
         info =  <b>dein Gegner wartet bis du alle Figuren aufgestellt hast!</b>;
       }
+      btn = <button onClick={() => this.setup(me)}>set me up</button>;
+
     } // MobilMachung
     //
     // game controls & info
@@ -206,7 +213,6 @@ export class Spielbrett extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
-    var setup = <button onClick={() => this.setup(me)}>set me up</button>;
     
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
@@ -215,7 +221,7 @@ export class Spielbrett extends React.Component {
         </table>
         <table width="400" id="board">
           <tbody>{tbody}</tbody>
-        </table>{setup}
+        </table><p>{btn}</p>
         <table id="deckRot">
           <tbody>{reserven[1]}</tbody>
         </table>
