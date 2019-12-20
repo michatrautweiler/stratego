@@ -85,6 +85,8 @@ export class Spielbrett extends React.Component {
     let tbody = [];
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
+    let notMe = 1;
+    if (me == 1) notMe = 0;
     let size = this.props.G.schlacht.groesse();
     for (let i = 0; i < size; i++) {
       let cells = [];
@@ -93,7 +95,15 @@ export class Spielbrett extends React.Component {
         let f = this.props.G.schlacht.holeFigur(feldId);
         if (f) {
           let png = "./figurX" + f.farbe + ".svg"; // cwd is folder public
+        
           if (f.besitzer == me) { // typeof me is string
+            png = "./figur" + f.rang + f.farbe + ".svg";
+          } else if (   this.props.G.kampf 
+                     && this.props.G.kampf[notMe]
+                     && f.equals(this.props.G.kampf[notMe])
+                    ) 
+          {
+            // reveal figure of opponent after fight  
             png = "./figur" + f.rang + f.farbe + ".svg";
           }
           cells.push(
@@ -156,7 +166,6 @@ export class Spielbrett extends React.Component {
 	    deck.push(<tr key={i}>{zeile}</tr>);
 	  }
       info = <i>dein Gegner ist am aufstellen seiner Figuren...</i>;
-      let notMe = (me + 1) % 2;
       if (this.props.G.armeen[0].istAufgestellt()) {
         info =  <b>dein Gegner wartet bis du alle Figuren aufgestellt hast!</b>;
       }

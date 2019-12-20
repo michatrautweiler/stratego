@@ -93,23 +93,8 @@ function platziere(G, ctx, willHin, feld, player) {
   }
 }
 
-function bereit(G, ctx) {
-   ctx.events.endStage();
-}
-
-function bereitZurSchlacht(G, ctx) {
-  if (ctx.activePlayers === null) {
-    return false;
-  } else {
-    var p1 = ctx.activePlayers["0"];
-    var p0 = ctx.activePlayers["1"];
-    if (p0 === p1) {
-      return p0 === "Warten";  
-    }
-  }
-}
-
 function bewege(G, ctx, willHin, feld, player) {
+  G.kampf = [];
   G.log.unshift("bewege");
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
@@ -123,7 +108,6 @@ function bewege(G, ctx, willHin, feld, player) {
     G.schlacht.verschiebe(willHin, feld);  
     G.log.unshift(willHin.farbe + " " + willHin.typ + " auf " + feld);
   }
-  G.kampf = [];
 }
 
 function schlage(G, ctx, willHin, schonDa) {

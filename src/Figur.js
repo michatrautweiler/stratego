@@ -16,4 +16,14 @@ export class Figur {
   istMobil() {
     return true; 
   }
+  
+  equals(figur) {
+    if (!figur) return false;
+    if (this.typ !== figur.typ) return false;
+    if (this.rang !== figur.rang) return false;
+    if (this.num !== figur.num) return false;
+    if (this.besitzer !== figur.besitzer) return false;
+    return true;
+  }
+  
 }
