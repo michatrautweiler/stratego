@@ -61,10 +61,11 @@ export const Stratego = {
   }, */
 
   endIf: (G, ctx) => {
-    if (IsVictory(G.kampf)) {
-      return { winner: G.kampf[ctx.currentPlayer].farbe };
-    }
-    // TODO DRAW: eine bewegbaren Figuren
+    var rotVerliert = G.armeen[0].istKampfUnfaehig();
+    var gelbVerliert = G.armeen[1].istKampfUnfaehig();
+    if (rotVerliert && gelbVerliert) return { winner: "Patt. Niemand " };
+    if (rotVerliert) return { winner: G.armeen[1].farbe };
+    if (gelbVerliert) return { winner: G.armeen[0].farbe };
   }
 };
 
@@ -142,7 +143,7 @@ function schlage(G, ctx, willHin, schonDa) {
 
 function gebeAuf(G, ctx) {
   G.help = G.armeen[ctx.currentPlayer] + " gibt auf!";
-  G.armeen[ctx.currentPlayer] = null;
+  G.armeen[ctx.currentPlayer].entferne(0);
   ctx.endTurn();
 }
 

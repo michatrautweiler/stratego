@@ -50,7 +50,27 @@ export class Armee {
     return null;
   }
 }
-
+  
+  istKampfUnfaehig() {
+    // hat Flagge verloren
+    if (this.typ === "reserve") return false;
+    if (!this.flagge) return true; 
+    
+    // hat keine bewegbaren Figuren mehr
+    var figur;
+    for (figur of this.ada()) {
+      if (figur.istMobil()) return false;
+      //TODO: kann die Figur auf dem Schlachtfeld einen gueltigen Zug machen?
+    }
+    return true;
+  }
+  
+  ada() {
+    var figuren = [];
+    figuren.push(this.flagge);
+    figuren = figuren.concat(this.soldaten);
+    return figuren;
+  }
 
   mannStaerke(rang) {
   if (rang === 0) {
@@ -65,6 +85,7 @@ export class Armee {
   gattungen() {
   return ["flagge","soldat"];
 }
+  
 
   hinzu(figur) {
   if (figur.rang === 0) {
