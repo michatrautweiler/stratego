@@ -78,6 +78,23 @@ export class Spielbrett extends React.Component {
     if (!this.props.isActive) return false;
     return true;
   }
+  
+  setup(me) {
+    var armee = this.props.G.armeen[me];
+    this.props.moves.platziere(armee.flagge, 0, me);
+    this.props.moves.platziere(armee.bomben[2], 1, me);
+    this.props.moves.platziere(armee.bomben[1], 6, me);
+    this.props.moves.platziere(armee.bomben[0], 7, me);
+    this.props.moves.platziere(armee.mineure[2], 3, me);
+    this.props.moves.platziere(armee.mineure[1], 4, me);
+    this.props.moves.platziere(armee.mineure[0], 5, me);
+    this.props.moves.platziere(armee.soldaten[4], 8, me);
+    this.props.moves.platziere(armee.soldaten[3], 9, me);
+    this.props.moves.platziere(armee.soldaten[2], 10, me);
+    this.props.moves.platziere(armee.soldaten[1], 11, me);
+    this.props.moves.platziere(armee.soldaten[0], 2, me);
+
+  }
 
   render() {
     //
@@ -189,6 +206,7 @@ export class Spielbrett extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
+    var setup = <button onClick={() => this.setup(me)}>set me up</button>;
     
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
@@ -197,7 +215,7 @@ export class Spielbrett extends React.Component {
         </table>
         <table width="400" id="board">
           <tbody>{tbody}</tbody>
-        </table>
+        </table>{setup}
         <table id="deckRot">
           <tbody>{reserven[1]}</tbody>
         </table>
