@@ -18,6 +18,10 @@ export class Schlacht {
     return this.feldGroesse;
   }
   
+  anzahlFelder() {
+    return this.groesse() * this.groesse();
+  }
+  
   findeFigur(figur) {   
     var i = this.feld.indexOf(figur);
     if (i < 0) {
@@ -46,6 +50,7 @@ export class Schlacht {
   }
   
   istAufstellbar(figur, feld) {
+    if (!figur) return false;
     var dmz = 2* this.feldGroesse;
     var max = this.feldGroesse * this.feldGroesse;
     if (figur.besitzer === 0) {

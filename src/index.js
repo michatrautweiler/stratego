@@ -11,7 +11,7 @@ import * as serviceWorker from './serviceWorker';
 //const StrategoClient = Client({ game: Stratego, board: Spielbrett });
 
 // bot
-/*
+
 const App = Client({ game: Stratego, board: Spielbrett, 
   ai: {
     enumerate: (G, ctx) => {
@@ -20,10 +20,10 @@ const App = Client({ game: Stratego, board: Spielbrett,
         // phase MobilMachung
         // alle AdA, alle felder
         var platziereFigur = function(figur) {
-          for (var platz = 0; platz < G.schlacht.groesse(); platz++) {
-            //if (figur && G.schlacht.istAufstellbar(figur, platz)) {
+          for (var platz = 0; platz < G.schlacht.anzahlFelder(); platz++) {
+            if (G.schlacht.istAufstellbar(figur, platz)) {
               moves.push({ move: 'platziere', args: [figur, platz, 1] });
-            //}
+            }
           }
         };
         G.armeen[1].ada().forEach(platziereFigur);
@@ -51,7 +51,7 @@ const App = Client({ game: Stratego, board: Spielbrett,
     },
   }, 
 });
-*/
+/*
 
 // multi player, local
 const StrategoClient = Client({
@@ -68,7 +68,7 @@ const App = () => (
     </td></tr>
   </table>
 );
-
+*/
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
