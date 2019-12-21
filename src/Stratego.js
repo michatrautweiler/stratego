@@ -15,14 +15,14 @@ export const Stratego = {
   
   phases: {
     MobilMachung: { 
-      turn: {
-        activePlayers: { all: 'Aufstellen' },
-        stages: {
-          Aufstellen: {
+      //turn: {
+      //  activePlayers: { all: 'Aufstellen' },
+      //  stages: {
+      //    Aufstellen: {
             moves: { platziere },
-          }
-        }
-      },
+      //    }
+      //  }
+      //},
       start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armee bereit!")},
       endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
@@ -30,7 +30,6 @@ export const Stratego = {
     Kampf: { 
       moves: { bewege, schlage, gebeAuf }, 
       onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]; G.log.unshift("Auf in den Kampf!") },
-      turn: { moveLimit: 1 }
     }
   }, /* TODO refactor G to players, secret for easy removal
   playerView: (G, ctx, playerID) => {
@@ -73,17 +72,18 @@ export const Stratego = {
 // moves
 //
 function platziere(G, ctx, willHin, feld, player) {
+  if (player === "bot") G.log.unshift(feld + ": bot platziert " + willHin.gattung);
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
     // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
-    G.log.unshift("besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
+    G.log.unshift(feld + ": besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
     //TODO: handle occupied fields
     return;
   }
   var reservist = G.armeen[willHin.besitzer].entferne(willHin);
-  if (reservist === willHin) { // verhindert doppeltes platzieren
+  if (willHin === reservist) { // verhindert doppeltes platzieren
     G.schlacht.stelleAuf(willHin, feld);  
     G.log.unshift(feld + ": platziert " + willHin.gattung + " " + willHin.farbe);
     if (reservist.farbe === "rot") {
