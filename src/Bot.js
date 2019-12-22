@@ -22,31 +22,32 @@ export function validMoves(G, ctx) {
           if (figur && (figur.besitzer === 1)) {
             // bewege meine Figur
             var schonDa;
-            var ziel = G.schlacht.rechts(feld);
+            
+            ziel = G.schlacht.rauf(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
-              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
               else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = G.schlacht.links(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
-              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
               else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
-            
-            ziel = G.schlacht.rauf(feld);
+
+            var ziel = G.schlacht.rechts(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
-              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
               else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = G.schlacht.runter(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
-              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, 1] });
+              if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
               else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
           } 

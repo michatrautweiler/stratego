@@ -4,7 +4,77 @@ import { Flagge }  from './Flagge';
 import { Armee }  from './Armee';
 import { Schlacht }  from './Schlacht';
 
-it('should list all lower fields for all figures controlled by bot', () => {
+it('should list bewege moves for a figure controlled by bot', () => {
+  // original state.
+  const G = {
+    log: [],
+    schlacht: new Schlacht(3),
+    armeen: [new Armee("weiss", "aktiv", 0), new Armee("blau", "aktiv", 1)],
+  };
+  const ctx = { phase: "Kampf"};
+  for (var i=0; i<2; i++) {
+    G.armeen[i].bomben = [];
+    G.armeen[i].mineure = [];
+    while (G.armeen[i].soldaten.length < 1) G.armeen[i].soldaten.push(new Figur("soldat","blau",3,G.armeen[i].soldaten.length, i));
+    while (G.armeen[i].soldaten.length > 1) G.armeen[i].soldaten.pop();
+  }
+  G.schlacht.stelleAuf(G.armeen[0].flagge, 0);
+  G.schlacht.stelleAuf(G.armeen[0].soldaten[0], 1);
+  G.schlacht.stelleAuf(G.armeen[1].flagge, 8);
+  G.schlacht.stelleAuf(G.armeen[1].soldaten[0], 7);
+  
+  // make move.
+  var moves = validMoves(G, ctx);
+
+  // verify new state.
+  expect(moves.length).toEqual(2);
+  expect(moves).toEqual([
+    { move: 'bewege', args: [G.armeen[1].soldaten[0], 4, "bot"] },
+    { move: 'bewege', args: [G.armeen[1].soldaten[0], 6, "bot"] },
+  ]);
+});
+
+it('should list schlage moves for a figure controlled by bot', () => {
+  /* original state.
+   *  +---+---+---+  F = Flagge Gegner
+   *  |   | F |   |  S = Soldat Gegner
+   *  +---+---+---+  f = Flagge bot
+   *  | S | s |   |  s = Soldat bot
+   *  +---+---+---+  
+   *  |   |   | f |  Note that a 3*3 field is missing 
+   *  +---+---+---+  valid start positions due to DMZ.
+  */
+  const G = {
+    log: [],
+    schlacht: new Schlacht(3),
+    armeen: [new Armee("weiss", "aktiv", 0), new Armee("blau", "aktiv", 1)],
+  };
+  const ctx = { phase: "Kampf"};
+  for (var i=0; i<2; i++) {
+    G.armeen[i].bomben = [];
+    G.armeen[i].mineure = [];
+    while (G.armeen[i].soldaten.length < 1) G.armeen[i].soldaten.push(new Figur("soldat","blau",3,G.armeen[i].soldaten.length, i));
+    while (G.armeen[i].soldaten.length > 1) G.armeen[i].soldaten.pop();
+  }
+  G.schlacht.stelleAuf(G.armeen[0].flagge, 1);
+  G.schlacht.stelleAuf(G.armeen[0].soldaten[0], 3);
+  G.schlacht.stelleAuf(G.armeen[1].flagge, 8);
+  G.schlacht.stelleAuf(G.armeen[1].soldaten[0], 4);
+  
+  // make move.
+  var moves = validMoves(G, ctx);
+
+  // verify new state.
+  expect(moves.length).toEqual(4);
+  expect(moves).toEqual([
+    { move: 'schlage', args: [G.armeen[1].soldaten[0], G.armeen[0].flagge, 1] },
+    { move: 'schlage', args: [G.armeen[1].soldaten[0], G.armeen[0].soldaten[0], 3] },
+    { move: 'bewege', args: [G.armeen[1].soldaten[0], 5, "bot"] },
+    { move: 'bewege', args: [G.armeen[1].soldaten[0], 7, "bot"] },
+  ]);
+});
+
+it('should list all start fields for all figures controlled by bot', () => {
   // original state.
   const G = {
     log: [],
