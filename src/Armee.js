@@ -52,41 +52,42 @@ export class Armee {
     var findByNum = function(soldat) {
       return soldat.num === figur.num;
     }
-    
+    var tot;
+    var pos;
     if (figur.gattung === "flagge") {
       var f = this.flagge;
       this.flagge = null;
       return f;
     } else if (figur.gattung === "soldat") {
-      var tot = this.soldaten.find(findByNum);
+      tot = this.soldaten.find(findByNum);
       if (!tot) {
         this.unknownSoldat = this.figur;
         return null;
       } else {
         // found! remove
-        var pos = this.soldaten.indexOf(tot);
+        pos = this.soldaten.indexOf(tot);
         this.entfernt = this.soldaten.splice(pos, 1);
         return tot;
       }
     } else if (figur.gattung === "bombe") {
-      var tot = this.bomben.find(findByNum);
+      tot = this.bomben.find(findByNum);
       if (!tot) {
         this.unknownBomb = this.figur;
         return null;
       } else {
         // found! remove
-        var pos = this.bomben.indexOf(tot);
+        pos = this.bomben.indexOf(tot);
         this.entfernt = this.bomben.splice(pos, 1);
         return tot;
       } 
     } else if (figur.gattung === "mineur") {
-      var tot = this.mineure.find(findByNum);
+      tot = this.mineure.find(findByNum);
       if (!tot) {
         this.unknownMineur = this.figur;
         return null;
       } else {
         // found! remove
-        var pos = this.mineure.indexOf(tot);
+        pos = this.mineure.indexOf(tot);
         this.entfernt = this.mineure.splice(pos, 1);
         return tot;
       }

@@ -57,7 +57,7 @@ export class Spielbrett extends React.Component {
       // Figur auf Feld in Bewegung setzen / in die Hand nehmen
       var figur = this.props.G.schlacht.holeFigur(feld);
       if (figur) { //ctx.currentPlayer typeof string
-        if (figur.besitzer == me) this.figurInBewegung[me] = figur;
+        if (figur.besitzer.toString() === me) this.figurInBewegung[me] = figur;
       }
     }
   };
@@ -107,7 +107,7 @@ export class Spielbrett extends React.Component {
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
     let notMe = 1;
-    if (me == 1) notMe = 0;
+    if (me === "1") notMe = 0;
     let size = this.props.G.schlacht.groesse();
     for (let i = 0; i < size; i++) {
       let cells = [];
@@ -117,7 +117,7 @@ export class Spielbrett extends React.Component {
         if (f) {
           let png = "./figur_hidden_" + f.farbe + ".svg"; // cwd is folder public
         
-          if (f.besitzer == me) { // typeof me is string
+          if (f.besitzer.toString() === me) { // typeof me is string
             png = "./figur_" + f.gattung + "_" + f.farbe + ".svg";
           } else if (   this.props.G.kampf 
                      && this.props.G.kampf[notMe]

@@ -5,10 +5,10 @@ export function validMoves(G, ctx) {
         // alle AdA, alle felder
         var adas = G.armeen[1].ada();
         for (var f=0; f < adas.length; f++ ) {
-          var figur = adas[f];
+          var zuPlatzieren = adas[f];
           for (var platz = 0; platz < G.schlacht.anzahlFelder(); platz++) {
-            if (G.schlacht.istAufstellbar(figur, platz)) {
-              moves.push({ move: 'platziere', args: [figur, platz, "bot"] });
+            if (G.schlacht.istAufstellbar(zuPlatzieren, platz)) {
+              moves.push({ move: 'platziere', args: [zuPlatzieren, platz, "bot"] });
             }
           }
         }
@@ -23,7 +23,7 @@ export function validMoves(G, ctx) {
             // bewege meine Figur
             var schonDa;
             
-            ziel = G.schlacht.rauf(feld);
+            var ziel = G.schlacht.rauf(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
@@ -37,7 +37,7 @@ export function validMoves(G, ctx) {
               else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
 
-            var ziel = G.schlacht.rechts(feld);
+            ziel = G.schlacht.rechts(feld);
             if (G.schlacht.istErreichbar(figur,ziel)) {
               schonDa = G.schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });

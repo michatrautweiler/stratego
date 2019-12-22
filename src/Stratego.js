@@ -6,7 +6,7 @@ export const Stratego = {
   setup: () => ({ 
     log: [],
     schlacht: new Schlacht(4),
-    armeen: [reserveRot, reserveGelb],
+    armeen: [new Armee("rot", "reserve", 0), new Armee("gelb", "reserve", 1)],
     kampf: Array(2).fill(null)
   }),
   turn: {
@@ -72,7 +72,6 @@ export const Stratego = {
 // moves
 //
 function platziere(G, ctx, willHin, feld, player) {
-  if (player === "bot") G.log.unshift(feld + ": bot platziert " + willHin.gattung);
   var schonDa = G.schlacht.holeFigur(feld);
   if (schonDa === willHin) {
     // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
@@ -156,8 +155,7 @@ function gebeAuf(G, ctx) {
 //
 // main
 //
-var reserveRot = new Armee("rot", "reserve", 0);
-var reserveGelb = new Armee("gelb", "reserve", 1);
+
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 
