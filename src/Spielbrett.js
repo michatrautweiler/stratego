@@ -208,7 +208,7 @@ export class Spielbrett extends React.Component {
     if (this.props.ctx.gameover) {
       winner =
         this.props.ctx.gameover.winner !== undefined ? (
-          <div id="winner">{this.props.ctx.gameover.winner} gewinnt!</div>
+          <div id="winner">{this.props.ctx.gameover.msg} gewinnt!</div>
         ) : (
             <div id="winner">Draw!</div>
           );

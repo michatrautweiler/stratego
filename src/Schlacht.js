@@ -26,14 +26,12 @@ export class Schlacht {
     var i = this.feld.indexOf(figur);
     if (i < 0) {
       // suchfunktion
-      var sucheIndex = function(index, inhalt) {
-        if (i < 0 && figur.equals(inhalt)) {
-          i = index;
+      for (var index = 0; index < this.anzahlFelder(); index++) {
+        if (figur.equals(this.feld[index])) {
+          return index;
         }
       }
-      this.feld.forEach(sucheIndex);
-      if (i < 0) this.unknownFigure = figur;
-      else return i;
+      if (i < 0) { this.unknownFigure = figur; }
     } else {
       return i;
     }
