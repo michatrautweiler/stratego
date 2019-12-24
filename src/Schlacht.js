@@ -60,7 +60,19 @@ export class Schlacht {
   
   istErreichbar(figur, ziel) {
    if (ziel < 0) return false;
-   if (ziel >= this.anzahlFelder()) return false; 
+   if (ziel >= this.anzahlFelder()) return false;
+   // Seen
+   if (this.anzahlFelder() > 99) {
+     if (ziel === 42) return false;
+     if (ziel === 43) return false;
+     if (ziel === 52) return false;
+     if (ziel === 53) return false;
+     if (ziel === 46) return false;
+     if (ziel === 47) return false;
+     if (ziel === 56) return false;
+     if (ziel === 57) return false;
+   }
+   
    //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
