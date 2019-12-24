@@ -9,20 +9,20 @@ export class Armee {
   constructor(farbe, typ, player) {
     this.typ = typ;
     this.farbe = farbe;
-    this.flagge = new Flagge("flagge",farbe,0,1, player);
+    this.flagge = [new Flagge("flagge",farbe,0,1, player)];
     this.soldaten = [];
-    for (var i = this.anzahlSoldaten(); i>0; i--) {
-      var soldat = new Figur("soldat",farbe,3,i, player);
+    for (let i = this.anzahlSoldaten(); i>0; i--) {
+      let soldat = new Figur("soldaten",farbe,3,i, player);
       this.soldaten.unshift(soldat);
     }
     this.bomben = [];
-    for (i = this.anzahlBomben(); i>0; i--) {
-      var bombe = new Bombe("bombe",farbe,"B",i, player);
+    for (let i = this.anzahlBomben(); i>0; i--) {
+      let bombe = new Bombe("bomben",farbe,"B",i, player);
       this.bomben.unshift(bombe);
     }
     this.mineure = [];
-    for (i = this.anzahlMineure(); i>0; i--) {
-      var mineur = new Mineur("mineur",farbe,2,i, player);
+    for (let i = this.anzahlMineure(); i>0; i--) {
+      let mineur = new Mineur("mineure",farbe,2,i, player);
       this.mineure.unshift(mineur);
     }
   }
@@ -32,78 +32,38 @@ export class Armee {
   anzahlMineure() { return 5; }
   
   gattungen() {
-    return ["flagge","soldat","bombe","mineur"];
+    return ["flagge","soldaten","bomben","mineure"];
   }
   
   macheMobil(gattung) {
-    if (gattung === "flagge") {
-      return this.flagge;
-    } else if (gattung === "soldat") {
-      return this.soldaten[this.soldaten.length-1];  
-    } else if (gattung === "bombe") {
-      return this.bomben[this.bomben.length-1];
-    } else if (gattung === "mineur") {
-      return this.mineure[this.mineure.length-1];
-    } else return null;
+    let index =  this[gattung].length -1;
+    return this[gattung][index];
   }
   
   entferne(figur) {
     // suchfunktion
-    var findByNum = function(soldat) {
+    let findByNum = function(soldat) {
       return soldat.num === figur.num;
     }
-    var tot;
-    var pos;
-    if (figur.gattung === "flagge") {
-      var f = this.flagge;
-      this.flagge = null;
-      return f;
-    } else if (figur.gattung === "soldat") {
-      tot = this.soldaten.find(findByNum);
-      if (!tot) {
-        this.unknownSoldat = this.figur;
-        return null;
-      } else {
-        // found! remove
-        pos = this.soldaten.indexOf(tot);
-        this.entfernt = this.soldaten.splice(pos, 1);
-        return tot;
-      }
-    } else if (figur.gattung === "bombe") {
-      tot = this.bomben.find(findByNum);
-      if (!tot) {
-        this.unknownBomb = this.figur;
-        return null;
-      } else {
-        // found! remove
-        pos = this.bomben.indexOf(tot);
-        this.entfernt = this.bomben.splice(pos, 1);
-        return tot;
-      } 
-    } else if (figur.gattung === "mineur") {
-      tot = this.mineure.find(findByNum);
-      if (!tot) {
-        this.unknownMineur = this.figur;
-        return null;
-      } else {
-        // found! remove
-        pos = this.mineure.indexOf(tot);
-        this.entfernt = this.mineure.splice(pos, 1);
-        return tot;
-      }
-    } else {
-      this.unknownRank = this.figur;
+    let tot = this[figur.gattung].find(findByNum);
+    if (!tot) {
+      this.unknownSoldat = this.figur;
       return null;
+    } else {
+      // found! remove
+      let pos = this[figur.gattung].indexOf(tot);
+      let entfernt = this[figur.gattung].splice(pos, 1);
+      return tot;
     }
   }
   
   istKampfUnfaehig() {
     // hat Flagge verloren
     if (this.typ === "reserve") return false;
-    if (!this.flagge) return true; 
+    if (!this.flagge || this.flagge.length < 1  || !this.flagge[0]) return true; 
     
     // hat keine bewegbaren Figuren mehr
-    var figur;
+    let figur;
     for (figur of this.ada()) {
       if (figur.istMobil()) return false;
       //TODO: kann die Figur auf dem Schlachtfeld einen gueltigen Zug machen?
@@ -112,55 +72,38 @@ export class Armee {
   }
   
   ada() {
-    var figuren = [];
-    figuren.push(this.flagge);
-    figuren = figuren.concat(this.soldaten);
-    figuren = figuren.concat(this.bomben);
-    figuren = figuren.concat(this.mineure);
+    let figuren = [];
+    for (var gattung in this) {
+      if (Array.isArray(this[gattung])) {
+        figuren = figuren.concat(this[gattung]);
+      }
+    }
     return figuren;
   }
 
   mannStaerke(gattung) {
-    if (gattung === "flagge") {
-      if (this.flagge === null) return 0; else return 1;
-    }
-    else if (gattung === "soldat") {
-      return this.soldaten.length;
-    } else if (gattung === "bombe") {
-      return this.bomben.length;
-    } else if (gattung === "mineur") {
-      return this.mineure.length;
-    }
-    else return 0;
-}
+    if (Array.isArray(this[gattung])) {
+      return this[gattung].length;
+    } else return 0;
+  }
   
 
   hinzu(figur) {
     // suchfunktion
-    var istGleicheFigur = function(soldat) {
+    let istGleicheFigur = function(soldat) {
       return soldat.num === figur.num;
     }
-    
-    if (figur.gattung === "flagge") {
-      this.flagge = figur;
+    if (!this[figur.gattung].find(istGleicheFigur)) {
+      this[figur.gattung].push(figur);
     }
-    else if (figur.gattung === "soldat") {
-      if (!this.soldaten.find(istGleicheFigur))
-      this.soldaten.push(figur);
-    } else if (figur.gattung === "bombe") {
-      if (!this.bomben.find(istGleicheFigur))
-      this.bomben.push(figur);
-    } else if (figur.gattung === "mineur") {
-      if (!this.mineure.find(istGleicheFigur))
-      this.mineure.push(figur);
-    }
+    return;
   }
  
   istAufgestellt() {
     if (this.typ === "aktiv") return true;
-    var anzahlMann = 0;
-    var gattung;
-    for (gattung of this.gattungen()) {
+    let anzahlMann = 0;
+    let gattung;
+    for (gattung in this) {
       anzahlMann += this.mannStaerke(gattung);
     }
     return anzahlMann === 0;
