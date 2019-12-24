@@ -5,7 +5,7 @@ import { Schlacht }  from './Schlacht';
 export const Stratego = {
   setup: () => ({ 
     log: [],
-    schlacht: new Schlacht(4),
+    schlacht: new Schlacht(10),
     armeen: [new Armee("rot", "reserve", 0), new Armee("gelb", "reserve", 1)],
     kampf: Array(2).fill(null)
   }),
@@ -31,33 +31,10 @@ export const Stratego = {
       moves: { bewege, schlage, gebeAuf }, 
       onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]; G.log.unshift("Auf in den Kampf!") },
     }
-  }, /* TODO refactor G to players, secret for easy removal
+  }, 
+  /* TODO refactor G to players, secret for easy removal
   playerView: (G, ctx, playerID) => {
-    if (ctx.numMoves < 1) return G;
-    var anzahlFelder = G.schlacht.groesse() * G.schlacht.groesse();
-    var secretSchlacht = new Schlachtfeld(anzahlFelder);
-    for (var feld=0; feld < anzahlFelder; feld++) {
-      var figur = G.schlacht.holeFigur(feld);
-      if (figur) {
-        //if (figur.farbe === "rot") { //FIXME compare ids
-          if (playerID == 0) {
-            var dummyRot = new Figur("dummy", "rot", "X", 0);
-            secretSchlacht.stelleAuf(dummyRot, feld);
-          } else {
-            secretSchlacht.stelleAuf(figur, feld);
-          }
-        //}
-      }
-    }
-    var Gsecret = {
-      help: "secret",
-      figur: G.figur,
-      schlacht: secretSchlacht,
-      armeen: G.armeen,
-      kampf: G.kampf
-    };
-    return Gsecret;
-  }, */
+   */
 
   endIf: (G, ctx) => {
     var rotVerliert = G.armeen[0].istKampfUnfaehig();
@@ -73,7 +50,7 @@ export const Stratego = {
 //
 function platziere(G, ctx, willHin, feld, player) {
   var schonDa = G.schlacht.holeFigur(feld);
-  if (schonDa === willHin) {
+  if (schonDa === willHin || !willHin) {
     // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {

@@ -81,19 +81,13 @@ export class Spielbrett extends React.Component {
   
   setup(me) {
     var armee = this.props.G.armeen[me];
-    this.props.moves.platziere(armee.flagge, 0, me);
-    this.props.moves.platziere(armee.bomben[2], 1, me);
-    this.props.moves.platziere(armee.bomben[1], 6, me);
-    this.props.moves.platziere(armee.bomben[0], 7, me);
-    this.props.moves.platziere(armee.mineure[2], 3, me);
-    this.props.moves.platziere(armee.mineure[1], 4, me);
-    this.props.moves.platziere(armee.mineure[0], 5, me);
-    this.props.moves.platziere(armee.soldaten[4], 8, me);
-    this.props.moves.platziere(armee.soldaten[3], 9, me);
-    this.props.moves.platziere(armee.soldaten[2], 10, me);
-    this.props.moves.platziere(armee.soldaten[1], 11, me);
-    this.props.moves.platziere(armee.soldaten[0], 2, me);
-  }
+    var figur;
+    var platz = this.props.G.schlacht.anzahlFelder();
+    for(figur of armee.ada()) {
+      platz--;
+      this.props.moves.platziere(figur, platz, me);
+    }
+}
   
   aufgeben() {
     this.props.moves.gebeAuf();
@@ -133,7 +127,7 @@ export class Spielbrett extends React.Component {
               class="active"
               onClick={() => this.onClick(feldId, null)}
             >
-              <img src={png} width="48" height="64" alt={png}/>
+              <img src={png} width="40" height="52" alt={png}/>
             </td>
           );
           
@@ -142,7 +136,7 @@ export class Spielbrett extends React.Component {
             <td
               key={feldId}
               onClick={() => this.onClick(feldId)}
-            > {feldId}
+            >
             </td>
           );
         }
@@ -217,13 +211,13 @@ export class Spielbrett extends React.Component {
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
         <table id="deckGelb">
-          <tbody>{reserven[0]}</tbody>
+          <tbody>{reserven[1]}</tbody>
         </table>
-        <table width="400" id="board">
+        <table id="board">
           <tbody>{tbody}</tbody>
         </table><p>{btn}</p>
         <table id="deckRot">
-          <tbody>{reserven[1]}</tbody>
+          <tbody>{reserven[0]}</tbody>
         </table>
         <p>{info}</p>
         {winner}

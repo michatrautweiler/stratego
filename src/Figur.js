@@ -1,11 +1,11 @@
 export class Figur {
 
-  constructor(gattung,farbe,rang, num, player) {
+  constructor(gattung,farbe,rang, num, besitzer) {
     this.gattung = gattung;
     this.farbe = farbe;
     this.rang = rang;
     this.num = num;
-    this.besitzer = player;
+    this.besitzer = besitzer;
   }
 
   schlage(gegner) {

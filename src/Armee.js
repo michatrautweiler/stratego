@@ -27,9 +27,9 @@ export class Armee {
     }
   }
   
-  anzahlSoldaten() { return 1; }
-  anzahlBomben() { return 0; }
-  anzahlMineure() { return 0; }
+  anzahlSoldaten() { return 12; }
+  anzahlBomben() { return 6; }
+  anzahlMineure() { return 5; }
   
   gattungen() {
     return ["flagge","soldat","bombe","mineur"];

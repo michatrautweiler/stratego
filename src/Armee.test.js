@@ -9,9 +9,18 @@ it('should return all AdA', () => {
   armee.bomben = [];
   armee.mineure[0] = new Armee("schwarz", "mineur", 7);
 
+  // right size
+  while (armee.soldaten.length < 2) armee.soldaten.push({gattung: "soldat", num:armee.soldaten.length});
+  while (armee.soldaten.length > 2) armee.soldaten.pop();
+  while (armee.bomben.length < 3) armee.bomben.push({gattung: "bombe", num:armee.bomben.length});
+  while (armee.bomben.length > 3) armee.bomben.pop();
+  while (armee.mineure.length < 1) armee.mineure.push({gattung: "mineur", num:armee.mineure.length});
+  while (armee.mineure.length > 1) armee.mineure.pop();
+
   // make move.
   var adas = armee.ada();
   
   // verify new state.
-  expect(adas).toEqual([armee.flagge, armee.soldaten[0], armee.soldaten[1], armee.mineure[0]]);
+  expect(adas.length).toEqual(7);
+  expect(adas).toEqual([armee.flagge, armee.soldaten[0], armee.soldaten[1], armee.bomben[0], armee.bomben[1], armee.bomben[2], armee.mineure[0]]);
 });
