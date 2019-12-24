@@ -13,7 +13,7 @@ it('should list bewege moves for a figure controlled by bot', () => {
   };
   G.schlacht.dim = 4;
   const ctx = { phase: "Kampf"};
-  for (var i=0; i<2; i++) {
+  for (let i=0; i<2; i++) {
     G.armeen[i].bomben = [];
     G.armeen[i].mineure = [];
     while (G.armeen[i].soldaten.length < 1) G.armeen[i].soldaten.push(new Figur("soldat","blau",3,G.armeen[i].soldaten.length, i));
@@ -26,7 +26,7 @@ it('should list bewege moves for a figure controlled by bot', () => {
   
   
   // make move.
-  var moves = validMoves(G, ctx);
+  let moves = validMoves(G, ctx);
 
   // verify new state.
   expect(moves.length).toEqual(2);
@@ -52,24 +52,24 @@ it('should list schlage moves for a figure controlled by bot', () => {
     armeen: [new Armee("weiss", "aktiv", 0), new Armee("blau", "aktiv", 1)],
   };
   const ctx = { phase: "Kampf"};
-  for (var i=0; i<2; i++) {
+  for (let i=0; i<2; i++) {
     G.armeen[i].bomben = [];
     G.armeen[i].mineure = [];
     while (G.armeen[i].soldaten.length < 1) G.armeen[i].soldaten.push(new Figur("soldat","blau",3,G.armeen[i].soldaten.length, i));
     while (G.armeen[i].soldaten.length > 1) G.armeen[i].soldaten.pop();
   }
-  G.schlacht.stelleAuf(G.armeen[0].flagge, 1);
+  G.schlacht.stelleAuf(G.armeen[0].flagge[0], 1);
   G.schlacht.stelleAuf(G.armeen[0].soldaten[0], 3);
-  G.schlacht.stelleAuf(G.armeen[1].flagge, 8);
+  G.schlacht.stelleAuf(G.armeen[1].flagge[0], 8);
   G.schlacht.stelleAuf(G.armeen[1].soldaten[0], 4);
   
   // make move.
-  var moves = validMoves(G, ctx);
+  let moves = validMoves(G, ctx);
 
   // verify new state.
   expect(moves.length).toEqual(4);
   expect(moves).toEqual([
-    { move: 'schlage', args: [G.armeen[1].soldaten[0], G.armeen[0].flagge, 1] },
+    { move: 'schlage', args: [G.armeen[1].soldaten[0], G.armeen[0].flagge[0], 1] },
     { move: 'schlage', args: [G.armeen[1].soldaten[0], G.armeen[0].soldaten[0], 3] },
     { move: 'bewege', args: [G.armeen[1].soldaten[0], 5, "bot"] },
     { move: 'bewege', args: [G.armeen[1].soldaten[0], 7, "bot"] },
@@ -88,19 +88,19 @@ it('should list all start fields for all figures controlled by bot', () => {
   G.armeen[1].mineure = [];
   while (G.armeen[1].soldaten.length < 2) G.armeen[1].soldaten.push(new Figur("soldat","blau",3,G.armeen[1].soldaten.length, 1));
   while (G.armeen[1].soldaten.length > 2) G.armeen[1].soldaten.pop();
-  G.armeen.flagge = new Flagge("flagge", "blau", 1);
+  G.armeen.flagge = [new Flagge("flagge", "blau", 1)];
   G.schlacht.dim = 4;
 
   // make move.
-  var moves = validMoves(G, ctx);
+  let moves = validMoves(G, ctx);
 
   // verify new state.
   expect(moves.length).toEqual(12);
   expect(moves).toEqual([
-    { move: 'platziere', args: [G.armeen[1].flagge, 0, "bot"] },
-    { move: 'platziere', args: [G.armeen[1].flagge, 1, "bot"] },
-    { move: 'platziere', args: [G.armeen[1].flagge, 2, "bot"] },
-    { move: 'platziere', args: [G.armeen[1].flagge, 3, "bot"] },
+    { move: 'platziere', args: [G.armeen[1].flagge[0], 0, "bot"] },
+    { move: 'platziere', args: [G.armeen[1].flagge[0], 1, "bot"] },
+    { move: 'platziere', args: [G.armeen[1].flagge[0], 2, "bot"] },
+    { move: 'platziere', args: [G.armeen[1].flagge[0], 3, "bot"] },
     { move: 'platziere', args: [G.armeen[1].soldaten[0], 0, "bot"] },
     { move: 'platziere', args: [G.armeen[1].soldaten[0], 1, "bot"] },
     { move: 'platziere', args: [G.armeen[1].soldaten[0], 2, "bot"] },

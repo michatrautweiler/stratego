@@ -175,7 +175,7 @@ export class Spielbrett extends React.Component {
 				key={feld} class="deck"
 				//className={i===0 ? 'active' : ''}
 			    onClick={() => this.stelleAuf(art)}
-			  >
+			  > 
 			    <img src={png} width="48" height="64" alt={png}/>
 			  </td>
 		    );
