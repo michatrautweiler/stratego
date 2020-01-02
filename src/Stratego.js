@@ -5,7 +5,8 @@ import { Schlacht }  from './Schlacht';
 export const Stratego = {
   setup: () => ({ 
     log: [],
-    schlacht: new Schlacht(10),
+    feld: new Array(100).fill(null),
+    schlacht: null,
     armeen: [new Armee("rot", "reserve", 0), new Armee("gelb", "reserve", 1)],
     kampf: Array(2).fill(null)
   }),
@@ -23,7 +24,7 @@ export const Stratego = {
           }
         }
       },
-      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armee bereit!")},
+      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armeen bereit!"), new Schlacht(G.feld) },
       endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
     },
@@ -132,7 +133,6 @@ function gebeAuf(G, ctx) {
 //
 // main
 //
-
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 

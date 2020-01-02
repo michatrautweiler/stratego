@@ -1,8 +1,8 @@
 export class Schlacht {
 
-  constructor(dim) {
-    this.feldGroesse = dim;
-    this.feld = new Array(dim * dim).fill(null);
+  constructor(feld) {
+    this.feld = feld;
+    this.dim = 10;
   }
   
   stelleAuf(figur, platz) {
@@ -15,11 +15,11 @@ export class Schlacht {
   }
   
   groesse() {
-    return this.feldGroesse;
+    return this.dim;
   }
   
   anzahlFelder() {
-    return this.groesse() * this.groesse();
+    return this.feld.length;
   }
   
   findeFigur(figur) {   
@@ -50,7 +50,7 @@ export class Schlacht {
   istAufstellbar(figur, platz) {
     if (!figur) return false;
     if (this.feld[platz]) return false;
-    var dmz = 2* this.feldGroesse;
+    var dmz = 2* this.groesse();
     if (figur.besitzer === 1) {
       return 2*platz < this.anzahlFelder() - dmz;
     } else {
@@ -77,33 +77,33 @@ export class Schlacht {
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
    // nicht über Rand
-   if ((ziel - standort) === 1 && (ziel % this.feldGroesse === 0)) return false;
-   if ((ziel - standort) === -1 && (standort % this.feldGroesse === 0)) return false;
+   if ((ziel - standort) === 1 && (ziel % this.groesse() === 0)) return false;
+   if ((ziel - standort) === -1 && (standort % this.groesse() === 0)) return false;
    // 1 Feld weit
    if ((ziel - standort) === 1) return true;
    if ((ziel - standort) === -1) return true;
-   if ((ziel - standort) === this.feldGroesse) return true;
-   if ((ziel - standort) ===  (0 - this.feldGroesse)) return true;
+   if ((ziel - standort) === this.groesse()) return true;
+   if ((ziel - standort) ===  (0 - this.groesse())) return true;
    // TODO scout
   }
   
   links(feld) {
-   if (feld % this.feldGroesse === 0) return -1;
+   if (feld % this.groesse() === 0) return -1;
    else return feld - 1;
   }
   
   rechts(feld) {
-   if (feld % this.feldGroesse === (this.feldGroesse-1)) return -1;
+   if (feld % this.groesse() === (this.groesse()-1)) return -1;
    else return feld + 1;
   }
   
   rauf(feld) {
-   if (feld < this.feldGroesse) return -1;
-   else return feld - this.feldGroesse;
+   if (feld < this.groesse()) return -1;
+   else return feld - this.groesse();
   }
   
   runter(feld) {
-   if (feld >= (this.anzahlFelder() - this.feldGroesse)) return -1;
-   else return feld + this.feldGroesse;
+   if (feld >= (this.anzahlFelder() - this.groesse())) return -1;
+   else return feld + this.groesse();
   }
 }
