@@ -7,7 +7,7 @@ export class Bombe extends Figur {
   }
   
   schlage(gegner) {
-    if (gegner.gattung === "mineur") return -1;
+    if (gegner.gattung === "mineure") return -1;
     else return 1;
   }
 }

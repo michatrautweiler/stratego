@@ -9,7 +9,7 @@ export class Figur {
   }
 
   schlage(gegner) {
-    if (gegner.gattung === "bombe") {
+    if (gegner.gattung === "bomben") {
       return -1; // verloren
     } else {
       return this.rang - gegner.rang;
