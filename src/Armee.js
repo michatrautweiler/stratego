@@ -11,6 +11,7 @@ export class Armee {
     this.typ = typ;
     this.farbe = farbe;
     this.flagge = [new Flagge("flagge",farbe,0,1, player)];
+    this.marschall = [new Figur("marschall",farbe,11,1, player)];
     this.soldaten = [];
     for (let i = this.anzahlSoldaten(); i>0; i--) {
       let soldat = new Figur("soldaten",farbe,3,i, player);
@@ -28,12 +29,12 @@ export class Armee {
     }
   }
   
-  anzahlSoldaten() { return 12; }
-  anzahlBomben() { return 6; }
-  anzahlMineure() { return 5; }
+  anzahlSoldaten() { return 3; }
+  anzahlBomben() { return 2; }
+  anzahlMineure() { return 2; }
   
   gattungen() {
-    return ["flagge","soldaten","bomben","mineure"];
+    return ["flagge","soldaten","bomben","mineure","marschall"];
   }
   
   mannschaft() {
@@ -43,7 +44,8 @@ export class Armee {
       flagge: this.flagge,
       soldaten: this.soldaten,
       bomben: this.bomben,
-      mineure: this.mineure
+      mineure: this.mineure,
+      marschall : this.marschall
     };
   }
   
@@ -54,6 +56,7 @@ export class Armee {
     this.soldaten = mannschaft.soldaten;
     this.bomben = mannschaft.bomben;
     this.mineure = mannschaft.mineure;
+    this.marschall = mannschaft.marschall;
   }
   
   macheMobil(gattung) {
@@ -110,6 +113,7 @@ export class Armee {
   
 
   hinzu(figur) {
+    //TODO: delete me
     // suchfunktion
     let istGleicheFigur = function(soldat) {
       return soldat.num === figur.num;
