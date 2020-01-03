@@ -9,6 +9,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Spielbrett.css';
+import { schlacht } from './Stratego';
 
 export class Spielbrett extends React.Component {
   static propTypes = {
@@ -26,20 +27,22 @@ export class Spielbrett extends React.Component {
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
     var willHin = this.figurInBewegung[me];
+    schlacht.populate(this.props.G.feld);
     if (willHin) {
       // Figur die schon in Bewegung / in der Hand ist aufs Feld setzen
-      var schonDa = this.props.G.schlacht.holeFigur(feld);
+      var schonDa = schlacht.holeFigur(feld);
       if (schonDa === willHin) {
         this.figurInBewegung[me] = null;
+        schlacht.empty();
         return; // avoid handling same event twice (once from each client)
       }
       if (this.props.ctx.phase === "MobilMachung") {
-        if (this.props.G.schlacht.istAufstellbar(willHin, feld))
+        if (schlacht.istAufstellbar(willHin, feld))
         this.props.moves.platziere(willHin, feld, me);
 
       } else {
         // Kampf
-        if (this.props.G.schlacht.istErreichbar(willHin, feld)) {
+        if (schlacht.istErreichbar(willHin, feld)) {
           if (schonDa) {
             if (schonDa.besitzer !== willHin.besitzer) {
               this.props.moves.schlage(willHin, schonDa, feld);
@@ -55,11 +58,12 @@ export class Spielbrett extends React.Component {
       this.figurInBewegung[me] = null;
     } else {
       // Figur auf Feld in Bewegung setzen / in die Hand nehmen
-      var figur = this.props.G.schlacht.holeFigur(feld);
+      var figur = schlacht.holeFigur(feld);
       if (figur) { //ctx.currentPlayer typeof string
         if (figur.besitzer.toString() === me) this.figurInBewegung[me] = figur;
       }
     }
+    schlacht.empty();
   };
   
   stelleAuf = (gattung) => {
@@ -80,13 +84,15 @@ export class Spielbrett extends React.Component {
   }
   
   setup(me) {
+    schlacht.populate(this.props.G.feld);
     var armee = this.props.G.armeen[me];
     var figur;
-    var platz = this.props.G.schlacht.anzahlFelder();
+    var platz = schlacht.anzahlFelder();
     for(figur of armee.ada()) {
       platz--;
       this.props.moves.platziere(figur, platz, me);
     }
+    schlacht.empty();
 }
   
   aufgeben() {
@@ -97,17 +103,19 @@ export class Spielbrett extends React.Component {
     //
     // Schlachtfeld
     //
+    schlacht.populate(this.props.G.feld);
+
     let tbody = [];
     let me = this.props.playerID;
     if (!me) me = this.props.ctx.currentPlayer;
     let notMe = 1;
     if (me === "1") notMe = 0;
-    let size = this.props.G.schlacht.groesse();
+    let size = schlacht.groesse();
     for (let i = 0; i < size; i++) {
       let cells = [];
       for (let j = 0; j < size; j++) {
         const feldId = size * i + j;
-        let f = this.props.G.schlacht.holeFigur(feldId);
+        let f = schlacht.holeFigur(feldId);
         if (f) {
           let png = "./figur_hidden_" + f.farbe + ".svg"; // cwd is folder public
         
@@ -207,7 +215,7 @@ export class Spielbrett extends React.Component {
             <div id="winner">Draw!</div>
           );
     }
-    
+    schlacht.empty();
     return (
       <div><p>Schlachtfeld Sicht {farbe}</p> 
         <table id="deckGelb">
