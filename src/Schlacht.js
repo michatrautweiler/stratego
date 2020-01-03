@@ -83,7 +83,7 @@ export class Schlacht {
    }
    
    //TODO use links(), rechts(),...
-   if (!figur.istMobil()) return false;
+   if (figur.gattung === "flagge" || figur.gattung === "bomben") return false;
    var standort = this.findeFigur(figur);
    // nicht über Rand
    if ((ziel - standort) === 1 && (ziel % this.groesse() === 0)) return false;

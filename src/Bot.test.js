@@ -15,7 +15,7 @@ it('should list bewege moves for a figure controlled by bot', () => {
       '1': { armee: new Armee("blau", "aktiv", 1).mannschaft() }
     }
   };
-  const ctx = { phase: "Kampf" };
+  const ctx = { phase: "Kampf", currentPlayer: "1" };
   
   for (let i=0; i<2; i++) {
     G.players[i].armee.bomben = [];
@@ -61,7 +61,7 @@ it('should list schlage moves for a figure controlled by bot', () => {
       '1': { armee: new Armee("blau", "aktiv", 1).mannschaft() }
     }
   };
-  const ctx = { phase: "Kampf"};
+  const ctx = { phase: "Kampf", currentPlayer: "1" };
   
   for (let i=0; i<2; i++) {
     G.players[i].armee.bomben = [];
@@ -100,7 +100,7 @@ it('should list all start fields for all figures controlled by bot', () => {
       '1': { armee: new Armee("blau", "aktiv", 1).mannschaft() }
     }
   };
-  const ctx = { phase: "MobilMachung"};
+  const ctx = { phase: "MobilMachung", currentPlayer: "1"};
   G.players[1].armee.bomben = [];
   G.players[1].armee.mineure = [];
   while (G.players[1].armee.soldaten.length < 2) G.players[1].armee.soldaten.push(new Figur("soldat","blau",3,G.players[1].armee.soldaten.length, 1));

@@ -32,28 +32,28 @@ export function validMoves(G, ctx) {
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer != ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = schlacht.links(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer != ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
 
             ziel = schlacht.rechts(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer != ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = schlacht.runter(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer != ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
           } 
         }
