@@ -123,7 +123,7 @@ function schlage(G, ctx, willHin, schonDa, feld) {
 }
 
 function gebeAuf(G, ctx) {
-  G.log.unshift(G.armeen[ctx.currentPlayer] + " gibt auf!");
+  G.log.unshift(G.armeen[ctx.currentPlayer].farbe + " gibt auf!");
   G.armeen[ctx.currentPlayer].quit = G.armeen[ctx.currentPlayer].flagge;  
   G.armeen[ctx.currentPlayer].flagge = null;
   ctx.events.endTurn();
