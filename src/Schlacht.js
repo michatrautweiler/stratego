@@ -1,12 +1,21 @@
 export class Schlacht {
 
-  constructor(feld) {
+  constructor(dim) {
+    this.dim = dim;
+    this.feld = null;
+  }
+  
+  populate(feld) {
     this.feld = feld;
-    this.dim = 10;
+  }
+  
+  
+  empty() {
+    this.feld = null;
   }
   
   stelleAuf(figur, platz) {
-    if (platz < 0 || platz > this.feld.length) { this.nirvana = figur; }
+    if (platz < 0 || platz > this.anzahlFelder()) { this.nirvana = figur; }
     this.feld[platz] = figur;
   }
   
@@ -76,7 +85,7 @@ export class Schlacht {
    //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
-   // nicht Ã¼ber Rand
+   // nicht Ÿber Rand
    if ((ziel - standort) === 1 && (ziel % this.groesse() === 0)) return false;
    if ((ziel - standort) === -1 && (standort % this.groesse() === 0)) return false;
    // 1 Feld weit

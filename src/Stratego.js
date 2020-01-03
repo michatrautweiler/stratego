@@ -5,14 +5,14 @@ import { Schlacht }  from './Schlacht';
 export const Stratego = {
   setup: () => ({ 
     log: [],
-    feld: new Array(100).fill(null),
-    schlacht: null,
+    feld: Array(100).fill(null),
     armeen: [new Armee("rot", "reserve", 0), new Armee("gelb", "reserve", 1)],
     kampf: Array(2).fill(null)
   }),
   turn: {
     moveLimit: 1,
   },
+  onBegin: (G, ctx) => { G.schlacht.feld = G.feld },
   
   phases: {
     MobilMachung: { 
@@ -24,7 +24,7 @@ export const Stratego = {
           }
         }
       },
-      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armeen bereit!"), new Schlacht(G.feld) },
+      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armeen bereit!") },
       endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
       next: 'Kampf'
     },
@@ -130,9 +130,12 @@ function gebeAuf(G, ctx) {
   ctx.events.endTurn();
 }
 
+
 //
 // main
 //
+export const schlacht = new Schlacht(10);
+
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
 
