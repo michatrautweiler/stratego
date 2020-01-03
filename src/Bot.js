@@ -1,4 +1,5 @@
 import { schlacht } from './Stratego';
+import { Armee } from './Armee';
 
 
 export function validMoves(G, ctx) {
@@ -7,7 +8,7 @@ export function validMoves(G, ctx) {
       if (ctx.phase === "MobilMachung") {
         // phase MobilMachung
         // alle AdA, alle felder
-        var adas = G.armeen[1].ada();
+        var adas = new Armee(G.players[1].armee).ada();
         for (var f=0; f < adas.length; f++ ) {
           var zuPlatzieren = adas[f];
           for (var platz = 0; platz < schlacht.anzahlFelder(); platz++) {

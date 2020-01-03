@@ -7,6 +7,7 @@ import { Mineur }  from './Mineur';
 export class Armee {
 
   constructor(farbe, typ, player) {
+    if (!typ) { this.populate(farbe); return this; }
     this.typ = typ;
     this.farbe = farbe;
     this.flagge = [new Flagge("flagge",farbe,0,1, player)];
@@ -33,6 +34,33 @@ export class Armee {
   
   gattungen() {
     return ["flagge","soldaten","bomben","mineure"];
+  }
+  
+  mannschaft() {
+    return {
+      typ: this.typ,
+      farbe: this.farbe,
+      flagge: this.flagge,
+      soldaten: this.soldaten,
+      bomben: this.bomben,
+      mineure: this.mineure
+    };
+  }
+  
+  populate(mannschaft) {
+    this.typ = mannschaft.typ;
+    this.farbe = mannschaft.farbe;
+    this.flagge = mannschaft.flagge;
+    this.soldaten = mannschaft.soldaten;
+    this.bomben = mannschaft.bomben;
+    this.mineure = mannschaft.mineure;
+  }
+  
+  empty() {
+    this.flagge = [];
+    this.soldaten = [];
+    this.bomben = [];
+    this.mineure = [];
   }
   
   macheMobil(gattung) {

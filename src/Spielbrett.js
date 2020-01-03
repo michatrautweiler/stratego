@@ -10,6 +10,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Spielbrett.css';
 import { schlacht } from './Stratego';
+import { Armee } from './Armee';
 
 export class Spielbrett extends React.Component {
   static propTypes = {
@@ -71,7 +72,8 @@ export class Spielbrett extends React.Component {
     if (!me) me = this.props.ctx.currentPlayer;
     // Klick auf Figur in Reserve / ausserhalb Spielbrett / Schlachtfeld
     // setzt Figur in Bewegung / wŠhlt Figur aus
-    this.figurInBewegung[me] = this.props.G.armeen[me].macheMobil(gattung);  
+    let armee = new Armee(this.props.G.players[me].armee);
+    this.figurInBewegung[me] = armee.macheMobil(gattung);  
   }
   
   bereit = () => {
@@ -85,7 +87,7 @@ export class Spielbrett extends React.Component {
   
   setup(me) {
     schlacht.populate(this.props.G.feld);
-    var armee = this.props.G.armeen[me];
+    let armee = new Armee(this.props.G.players[me].armee);
     var figur;
     var platz = schlacht.anzahlFelder();
     for(figur of armee.ada()) {
@@ -157,7 +159,7 @@ export class Spielbrett extends React.Component {
     let info = null;
     let btn = <button onClick={() => this.aufgeben()}>ich geb auf!</button>;
     
-    let meineReserve = this.props.G.armeen[me];
+    let meineReserve = new Armee(this.props.G.players[me].armee);
     let farbe = meineReserve.farbe;
     let deck = [];
     let reserven = [];
@@ -196,10 +198,7 @@ export class Spielbrett extends React.Component {
 	  }
 	  reserven[me] = deck;
 	  reserven[notMe] = null;
-      info = <i>dein Gegner ist am aufstellen seiner Figuren...</i>;
-      if (this.props.G.armeen[0].istAufgestellt()) {
-        info =  <b>dein Gegner wartet bis du alle Figuren aufgestellt hast!</b>;
-      }
+      
       btn = <button onClick={() => this.setup(me)}>set me up</button>;
 
     } // MobilMachung
