@@ -5,8 +5,11 @@ import { Schlacht }  from './Schlacht';
 export const Stratego = {
   setup: () => ({ 
     log: [],
-    schlacht: new Schlacht(10),
-    armeen: [new Armee("rot", "reserve", 0), new Armee("gelb", "reserve", 1)],
+    feld: Array(100).fill(null),
+    players: {
+    '0': { armee: new Armee("rot", "reserve", 0).mannschaft() },
+    '1': { armee: new Armee("gelb", "reserve", 1).mannschaft() }
+    },
     kampf: Array(2).fill(null)
   }),
   turn: {
@@ -23,13 +26,13 @@ export const Stratego = {
           }
         }
       },
-      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armee bereit!")},
-      endIf: (G, ctx) => { return G.armeen[0].istAufgestellt() && G.armeen[1].istAufgestellt() },
+      start: true, onBegin: (G,ctx) => { G.log.unshift("Macht eure Armeen bereit!") },
+      endIf: (G, ctx) => { return new Armee(G.players['0'].armee).istAufgestellt() && new Armee(G.players['1'].armee).istAufgestellt() },
       next: 'Kampf'
     },
     Kampf: { 
       moves: { bewege, schlage, gebeAuf }, 
-      onBegin: (G,ctx) => { G.armeen = [armeeRot, armeeGelb]; G.log.unshift("Auf in den Kampf!") },
+      onBegin: (G,ctx) => { G.players['0'].armee = armeeRot.mannschaft(); G.players['1'].armee = armeeGelb.mannschaft(); G.log.unshift("Auf in den Kampf!") },
     }
   }, 
   /* TODO refactor G to players, secret for easy removal
@@ -37,11 +40,11 @@ export const Stratego = {
    */
 
   endIf: (G, ctx) => {
-    var rotVerliert = G.armeen[0].istKampfUnfaehig();
-    var gelbVerliert = G.armeen[1].istKampfUnfaehig();
+    var rotVerliert = new Armee(G.players['0'].armee).istKampfUnfaehig();
+    var gelbVerliert = new Armee(G.players['1'].armee).istKampfUnfaehig();
     if (rotVerliert && gelbVerliert) return { draw: true, msg: "Patt. Niemand " };
-    if (rotVerliert) return { winner: 1, msg: G.armeen[1].farbe };
-    if (gelbVerliert) return { winner: 0, msg: G.armeen[0].farbe };
+    if (rotVerliert) return { winner: 1, msg: G.players[1].armee.farbe };
+    if (gelbVerliert) return { winner: 0, msg: G.players[0].armee.farbe };
   }
 };
 
@@ -49,18 +52,20 @@ export const Stratego = {
 // moves
 //
 function platziere(G, ctx, willHin, feld, player) {
-  var schonDa = G.schlacht.holeFigur(feld);
+  schlacht.populate(G.feld);
+  var schonDa = schlacht.holeFigur(feld);
   if (schonDa === willHin || !willHin) {
-    // G.help = schonDa.typ + " " + schonDa.farbe + " doppelt";
+    schlacht.empty();
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
     G.log.unshift(feld + ": besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
     //TODO: handle occupied fields
+    schlacht.empty();
     return;
   }
-  var reservist = G.armeen[willHin.besitzer].entferne(willHin);
+  var reservist = new Armee(G.players[willHin.besitzer].armee).entferne(willHin);
   if (willHin === reservist) { // verhindert doppeltes platzieren
-    G.schlacht.stelleAuf(willHin, feld);  
+    schlacht.stelleAuf(willHin, feld);  
     G.log.unshift(feld + ": platziert " + willHin.gattung + " " + willHin.farbe);
     if (reservist.farbe === "rot") {
       armeeRot.hinzu(willHin);
@@ -68,21 +73,25 @@ function platziere(G, ctx, willHin, feld, player) {
       armeeGelb.hinzu(willHin);        
     }
   }
+  schlacht.empty();
 }
 
 function bewege(G, ctx, willHin, feld, player) {
   G.kampf = [];
-  var schonDa = G.schlacht.holeFigur(feld);
+  schlacht.populate(G.feld);
+  var schonDa = schlacht.holeFigur(feld);
   if (schonDa === willHin) {
+    schlacht.empty();
     return; // avoid handling same event twice (once from each client)
   } else if (schonDa) {
     G.log.unshift(feld + ": besetzt von " + schonDa.gattung + " " + schonDa.farbe); 
     //TODO: handle occupied fields => schlage
   } else {
     // Feld ist frei
-    G.schlacht.verschiebe(willHin, feld);  
+    schlacht.verschiebe(willHin, feld);  
     G.log.unshift(feld + ": bewege " + willHin.gattung + " " + willHin.farbe);
   }
+  schlacht.empty();
 }
 
 function schlage(G, ctx, willHin, schonDa, feld) {
@@ -97,41 +106,45 @@ function schlage(G, ctx, willHin, schonDa, feld) {
     G.kampf[willHin.besitzer] = willHin;
     // Sieger bestimmen, Verlierer entfernen aus Armee
     var sieger = willHin.schlage(schonDa);
+    schlacht.populate(G.feld);
     if (sieger > 0) {
       // gewonnen, schonDa muss weg
-      G.schlacht.gestorben(feld); // FIXME: superfluous
-      G.schlacht.verschiebe(willHin, feld);
-      G.armeen[schonDa.besitzer].entferne(schonDa);
+      schlacht.gestorben(feld); // FIXME: superfluous
+      schlacht.verschiebe(willHin, feld);
+      new Armee(G.players[schonDa.besitzer].armee).entferne(schonDa);
       G.log.unshift(feld + ": " + willHin.gattung + " " + willHin.farbe + " gewinnt ");
     } else if (sieger < 0) {
       // verloren, willHin abräumen aus Armee und Spielfeld 
-      G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
-      G.armeen[willHin.besitzer].entferne(willHin);
+      schlacht.gestorben(schlacht.findeFigur(willHin));
+      new Armee(G.players[willHin.besitzer].armee).entferne(willHin);
       G.log.unshift(feld + ": "+ willHin.gattung + " " + willHin.farbe + " verliert ");
     } else {
       // kein Sieger
-      G.schlacht.gestorben(feld);
-      G.schlacht.gestorben(G.schlacht.findeFigur(willHin));
-      G.armeen[schonDa.besitzer].entferne(schonDa);
-      G.armeen[willHin.besitzer].entferne(willHin);
+      schlacht.gestorben(feld);
+      schlacht.gestorben(schlacht.findeFigur(willHin));
+      new Armee(G.players[schonDa.besitzer].armee).entferne(schonDa);
+      new Armee(G.players[willHin.besitzer].armee).entferne(willHin);
       G.log.unshift(feld + ": beide verlieren");
     }
   } else {
     //TODO Feld ist frei => bewege
     G.log.unshift(schonDa.gattung + " ?bewege?");
   }
+  schlacht.empty();
 }
 
 function gebeAuf(G, ctx) {
   G.log.unshift(G.armeen[ctx.currentPlayer].farbe + " gibt auf!");
-  G.armeen[ctx.currentPlayer].quit = G.armeen[ctx.currentPlayer].flagge;  
-  G.armeen[ctx.currentPlayer].flagge = null;
+  G.players[ctx.currentPlayer].quit = G.armeen[ctx.currentPlayer].flagge;  
+  G.players[ctx.currentPlayer].armee.flagge = null;
   ctx.events.endTurn();
 }
+
 
 //
 // main
 //
+export const schlacht = new Schlacht(10);
 
 var armeeRot = new Armee("rot", "aktiv", 0);
 var armeeGelb = new Armee("gelb", "aktiv", 1);
