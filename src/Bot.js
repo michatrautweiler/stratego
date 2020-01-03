@@ -7,7 +7,7 @@ export function validMoves(G, ctx) {
       schlacht.populate(G.feld);
       if (ctx.phase === "MobilMachung") {
         // phase MobilMachung
-        // alle AdA, alle felder
+        // alle eigenen AdA, alle Felder
         var adas = new Armee(G.players[1].armee).ada();
         for (var f=0; f < adas.length; f++ ) {
           var zuPlatzieren = adas[f];
@@ -24,7 +24,7 @@ export function validMoves(G, ctx) {
         
         for (let platz=0; platz < schlacht.anzahlFelder(); platz++) {
           var figur = schlacht.holeFigur(platz);
-          if (figur && (figur.besitzer === 1)) {
+          if (figur && (figur.besitzer == ctx.currentPlayer)) {
             // bewege meine Figur
             var schonDa;
             
@@ -32,28 +32,28 @@ export function validMoves(G, ctx) {
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = schlacht.links(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
 
             ziel = schlacht.rechts(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
             
             ziel = schlacht.runter(platz);
             if (schlacht.istErreichbar(figur,ziel)) {
               schonDa = schlacht.holeFigur(ziel);
               if (!schonDa) moves.push({ move: 'bewege', args: [figur, ziel, "bot"] });
-              else if (schonDa.besitzer === 0) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
+              else if (schonDa.besitzer.toString() !== ctx.currentPlayer) moves.push({ move: 'schlage', args: [figur, schonDa, ziel] });
             }
           } 
         }

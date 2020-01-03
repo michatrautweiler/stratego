@@ -32,7 +32,7 @@ export const Stratego = {
     },
     Kampf: { 
       moves: { bewege, schlage, gebeAuf }, 
-      onBegin: (G,ctx) => { G.armeen = [armeeRot.mannschaft(), armeeGelb.mannschaft() ]; G.log.unshift("Auf in den Kampf!") },
+      onBegin: (G,ctx) => { G.players['0'].armee = armeeRot.mannschaft(); G.players['1'].armee = armeeGelb.mannschaft(); G.log.unshift("Auf in den Kampf!") },
     }
   }, 
   /* TODO refactor G to players, secret for easy removal
@@ -43,8 +43,8 @@ export const Stratego = {
     var rotVerliert = new Armee(G.players['0'].armee).istKampfUnfaehig();
     var gelbVerliert = new Armee(G.players['1'].armee).istKampfUnfaehig();
     if (rotVerliert && gelbVerliert) return { draw: true, msg: "Patt. Niemand " };
-    if (rotVerliert) return { winner: 1, msg: G.armeen[1].farbe };
-    if (gelbVerliert) return { winner: 0, msg: G.armeen[0].farbe };
+    if (rotVerliert) return { winner: 1, msg: G.players[1].armee.farbe };
+    if (gelbVerliert) return { winner: 0, msg: G.players[0].armee.farbe };
   }
 };
 

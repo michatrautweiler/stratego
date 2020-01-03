@@ -85,7 +85,7 @@ export class Schlacht {
    //TODO use links(), rechts(),...
    if (!figur.istMobil()) return false;
    var standort = this.findeFigur(figur);
-   // nicht Ÿber Rand
+   // nicht Ã¼ber Rand
    if ((ziel - standort) === 1 && (ziel % this.groesse() === 0)) return false;
    if ((ziel - standort) === -1 && (standort % this.groesse() === 0)) return false;
    // 1 Feld weit

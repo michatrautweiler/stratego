@@ -56,13 +56,6 @@ export class Armee {
     this.mineure = mannschaft.mineure;
   }
   
-  empty() {
-    this.flagge = [];
-    this.soldaten = [];
-    this.bomben = [];
-    this.mineure = [];
-  }
-  
   macheMobil(gattung) {
     let index =  this[gattung].length -1;
     return this[gattung][index];
