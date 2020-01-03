@@ -20,15 +20,15 @@ it('should list bewege moves for a figure controlled by bot', () => {
   for (let i=0; i<2; i++) {
     G.players[i].armee.bomben = [];
     G.players[i].armee.mineure = [];
-    while (G.players[i].armee.soldaten.length < 1) G.players[i].armee.soldaten.push(new Figur("soldat","blau",3,G.players[i].armee.soldaten.length, i));
+    while (G.players[i].armee.soldaten.length < 1) G.players[i].armee.soldaten.push(new Figur("soldaten","blau",3,G.players[i].armee.soldaten.length, i));
     while (G.players[i].armee.soldaten.length > 1) G.players[i].armee.soldaten.pop();
   }
   
   schlacht.populate(G.feld);
   schlacht.dim = 3;
-  schlacht.stelleAuf(G.players[1].armee.flagge, 0);
+  schlacht.stelleAuf(G.players[1].armee.flagge[0], 0);
   schlacht.stelleAuf(G.players[1].armee.soldaten[0], 1);
-  schlacht.stelleAuf(G.players[0].armee.flagge, 8);
+  schlacht.stelleAuf(G.players[0].armee.flagge[0], 8);
   schlacht.stelleAuf(G.players[0].armee.soldaten[0], 7);
   schlacht.empty();
   
@@ -66,7 +66,7 @@ it('should list schlage moves for a figure controlled by bot', () => {
   for (let i=0; i<2; i++) {
     G.players[i].armee.bomben = [];
     G.players[i].armee.mineure = [];
-    while (G.players[i].armee.soldaten.length < 1) G.players[i].armee.soldaten.push(new Figur("soldat","blau",3,G.players[i].armee.soldaten.length, i));
+    while (G.players[i].armee.soldaten.length < 1) G.players[i].armee.soldaten.push(new Figur("soldaten","blau",3,G.players[i].armee.soldaten.length, i));
     while (G.players[i].armee.soldaten.length > 1) G.players[i].armee.soldaten.pop();
   }
   schlacht.populate(G.feld);
@@ -103,9 +103,9 @@ it('should list all start fields for all figures controlled by bot', () => {
   const ctx = { phase: "MobilMachung", currentPlayer: "1"};
   G.players[1].armee.bomben = [];
   G.players[1].armee.mineure = [];
-  while (G.players[1].armee.soldaten.length < 2) G.players[1].armee.soldaten.push(new Figur("soldat","blau",3,G.players[1].armee.soldaten.length, 1));
+  while (G.players[1].armee.soldaten.length < 2) G.players[1].armee.soldaten.push(new Figur("soldaten","blau",3,G.players[1].armee.soldaten.length, 1));
   while (G.players[1].armee.soldaten.length > 2) G.players[1].armee.soldaten.pop();
-  G.players[1].armee.flagge = [new Figur("flagge", "blau", 1)];
+  G.players[1].armee.flagge = [new Figur("flagge", "blau", 1,1,1)];
   schlacht.dim = 4;
   
   // make move.

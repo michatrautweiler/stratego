@@ -62,8 +62,10 @@ export class Schlacht {
     var dmz = 2* this.groesse();
     if (figur.besitzer === 1) {
       return 2*platz < this.anzahlFelder() - dmz;
-    } else {
+    } else if (figur.besitzer === 0) {
       return 2*platz >= this.anzahlFelder() + dmz;
+    } else {
+      return false;
     }
   }
   
