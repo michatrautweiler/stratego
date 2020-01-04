@@ -101,11 +101,20 @@ it('should list all start fields for all figures controlled by bot', () => {
     }
   };
   const ctx = { phase: "MobilMachung", currentPlayer: "1"};
-  G.players[1].armee.bomben = [];
-  G.players[1].armee.mineure = [];
-  while (G.players[1].armee.soldaten.length < 2) G.players[1].armee.soldaten.push(new Figur("soldaten","blau",3,G.players[1].armee.soldaten.length, 1));
-  while (G.players[1].armee.soldaten.length > 2) G.players[1].armee.soldaten.pop();
-  G.players[1].armee.flagge = [new Figur("flagge", "blau", 1,1,1)];
+  let army = G.players[1].armee;
+  army.bomben = [];
+  army.mineure = [];
+  while (army.soldaten.length < 2) army.soldaten.push(new Figur("soldaten","blau",3,army.soldaten.length, 1));
+  while (army.soldaten.length > 2) army.soldaten.pop();
+  army.flagge = [new Figur("flagge", "blau", 1,1,1)];
+  army.marschall = [];
+  army.general = [];
+  army.colonel = [];
+  army.major = [];
+  army.captain = [];
+  army.leutnant = [];
+  army.spion = [];
+  army.scouts = [];
   schlacht.dim = 4;
   
   // make move.
@@ -114,18 +123,18 @@ it('should list all start fields for all figures controlled by bot', () => {
   // verify new state.
   expect(moves.length).toEqual(12);
   expect(moves).toEqual([
-    { move: 'platziere', args: [G.players[1].armee.flagge[0], 0, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.flagge[0], 1, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.flagge[0], 2, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.flagge[0], 3, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[0], 0, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[0], 1, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[0], 2, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[0], 3, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[1], 0, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[1], 1, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[1], 2, "bot"] },
-    { move: 'platziere', args: [G.players[1].armee.soldaten[1], 3, "bot"] },
+    { move: 'platziere', args: [army.flagge[0], 0, "bot"] },
+    { move: 'platziere', args: [army.flagge[0], 1, "bot"] },
+    { move: 'platziere', args: [army.flagge[0], 2, "bot"] },
+    { move: 'platziere', args: [army.flagge[0], 3, "bot"] },
+    { move: 'platziere', args: [army.soldaten[0], 0, "bot"] },
+    { move: 'platziere', args: [army.soldaten[0], 1, "bot"] },
+    { move: 'platziere', args: [army.soldaten[0], 2, "bot"] },
+    { move: 'platziere', args: [army.soldaten[0], 3, "bot"] },
+    { move: 'platziere', args: [army.soldaten[1], 0, "bot"] },
+    { move: 'platziere', args: [army.soldaten[1], 1, "bot"] },
+    { move: 'platziere', args: [army.soldaten[1], 2, "bot"] },
+    { move: 'platziere', args: [army.soldaten[1], 3, "bot"] },
 
   ]);
 });

@@ -86,7 +86,7 @@ export class Schlacht {
    
    //TODO use links(), rechts(),...
    if (figur.gattung === "flagge" || figur.gattung === "bomben") return false;
-   var standort = this.findeFigur(figur);
+   let standort = this.findeFigur(figur);
    // nicht über Rand
    if ((ziel - standort) === 1 && (ziel % this.groesse() === 0)) return false;
    if ((ziel - standort) === -1 && (standort % this.groesse() === 0)) return false;
@@ -95,8 +95,33 @@ export class Schlacht {
    if ((ziel - standort) === -1) return true;
    if ((ziel - standort) === this.groesse()) return true;
    if ((ziel - standort) ===  (0 - this.groesse())) return true;
-   // TODO scout
-  }
+   if (figur.gattung === "scouts") {
+     // beliebig weit in gleiche Richtung, solange kein Hindernis im Weg
+     if (Math.floor(ziel/this.groesse()) === Math.floor(standort/this.groesse()) ) { 
+       // same row 
+       if (ziel < standort) {
+         let schritt = ziel +1; // go left
+         if (this.holeFigur(schritt)) return false; // eigene Figur im Weg (scouts)
+         return this.istErreichbar(figur, schritt);
+       } else if (ziel > standort) {
+         let schritt = ziel -1; // go right
+         if (this.holeFigur(schritt)) return false;
+         return this.istErreichbar(figur, schritt);
+       } else { return true; }
+     } else if ((ziel % this.groesse()) === (standort % this.groesse())) {
+       // same column
+       if (ziel < standort) {
+         let schritt = ziel + this.groesse(); // go up
+         if (this.holeFigur(schritt)) return false;
+         return this.istErreichbar(figur, schritt);
+       } else if (ziel > standort) {
+         let schritt = ziel - this.groesse(); // go down
+         if (this.holeFigur(schritt)) return false;
+         return this.istErreichbar(figur, schritt);
+       } else { return true; }
+     } else { return false; }
+   } else { return false; }  
+  }   
   
   links(feld) {
    if (feld % this.groesse() === 0) return -1;

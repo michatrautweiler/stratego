@@ -12,6 +12,14 @@ it('should return all AdA', () => {
   while (armee.bomben.length > 3) armee.bomben.pop();
   while (armee.mineure.length < 1) armee.mineure.push({gattung: "mineure", num:armee.mineure.length});
   while (armee.mineure.length > 1) armee.mineure.pop();
+  armee.marschall = [];
+  armee.general = [];
+  armee.colonel = [];
+  armee.major = [];
+  armee.captain = [];
+  armee.leutnant = [];
+  armee.spion = [];
+  armee.scouts = [];
 
   // make move.
   var adas = armee.ada();
@@ -28,7 +36,15 @@ it('should be istAufgestellt if no figures are left', () => {
   armee.soldaten = null;
   armee.mineure = [];
   armee.bomben = [];
-
+  armee.marschall = [];
+  armee.general = [];
+  armee.colonel = [];
+  armee.major = [];
+  armee.captain = [];
+  armee.leutnant = [];
+  armee.spion = [];
+  armee.scouts = [];
+  
   // make move.
   let isDone = armee.istAufgestellt();
   let figuren = armee.ada();

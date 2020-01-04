@@ -2,6 +2,7 @@ import { Figur }  from './Figur';
 import { Flagge }  from './Flagge';
 import { Bombe }  from './Bombe';
 import { Mineur }  from './Mineur';
+import { Spion }  from './Spion';
 
 
 export class Armee {
@@ -11,10 +12,25 @@ export class Armee {
     this.typ = typ;
     this.farbe = farbe;
     this.flagge = [new Flagge("flagge",farbe,0,1, player)];
-    this.marschall = [new Figur("marschall",farbe,11,1, player)];
+    this.spion = [new Spion("spion", farbe,1,1, player)];
+    this.marschall = [new Figur("marschall",farbe,10,1, player)];
+    this.general = [new Figur("general",farbe,9,1, player)];
+    this.colonel = [new Figur("colonel",farbe,8,1, player), new Figur("colonel",farbe,8,2, player)];
+    this.major = [new Figur("major",farbe,7,1, player), new Figur("major",farbe,7,2, player), new Figur("major",farbe,7,3, player)];
+    
+    this.captain = [];
+    for (let i = this.anzahlSoldaten(); i>0; i--) {
+      let soldat = new Figur("captain",farbe,6,i, player);
+      this.captain.unshift(soldat);
+    }
+    this.leutnant = [];
+    for (let i = this.anzahlSoldaten(); i>0; i--) {
+      let soldat = new Figur("leutnant",farbe,5,i, player);
+      this.leutnant.unshift(soldat);
+    }
     this.soldaten = [];
     for (let i = this.anzahlSoldaten(); i>0; i--) {
-      let soldat = new Figur("soldaten",farbe,3,i, player);
+      let soldat = new Figur("soldaten",farbe,4,i, player);
       this.soldaten.unshift(soldat);
     }
     this.bomben = [];
@@ -24,17 +40,23 @@ export class Armee {
     }
     this.mineure = [];
     for (let i = this.anzahlMineure(); i>0; i--) {
-      let mineur = new Mineur("mineure",farbe,2,i, player);
+      let mineur = new Mineur("mineure",farbe,3,i, player);
       this.mineure.unshift(mineur);
+    }
+    this.scouts = [];
+    for (let i = this.anzahlScouts(); i>0; i--) {
+      let scout = new Figur("scouts",farbe,2,i, player);
+      this.scouts.unshift(scout);
     }
   }
   
-  anzahlSoldaten() { return 3; }
-  anzahlBomben() { return 2; }
-  anzahlMineure() { return 2; }
+  anzahlSoldaten() { return 4; }
+  anzahlBomben() { return 6; }
+  anzahlMineure() { return 5; }
+  anzahlScouts() { return 8; }
   
   gattungen() {
-    return ["flagge","soldaten","bomben","mineure","marschall"];
+    return ["flagge","bomben","mineure","spion","marschall","general","colonel","major","captain","leutnant","soldaten","scouts"];
   }
   
   mannschaft() {
@@ -42,10 +64,17 @@ export class Armee {
       typ: this.typ,
       farbe: this.farbe,
       flagge: this.flagge,
-      soldaten: this.soldaten,
       bomben: this.bomben,
       mineure: this.mineure,
-      marschall : this.marschall
+      spion: this.spion,
+      marschall : this.marschall,
+      general : this.general,
+      colonel: this.colonel,
+      major: this.major,
+      captain: this.captain,
+      leutnant: this.leutnant,
+      soldaten: this.soldaten,
+      scouts: this.scouts
     };
   }
   
@@ -56,7 +85,14 @@ export class Armee {
     this.soldaten = mannschaft.soldaten;
     this.bomben = mannschaft.bomben;
     this.mineure = mannschaft.mineure;
+    this.spion = mannschaft.spion;
     this.marschall = mannschaft.marschall;
+    this.general = mannschaft.general;
+    this.colonel = mannschaft.colonel;
+    this.major = mannschaft.major;
+    this.captain = mannschaft.captain;
+    this.leutnant = mannschaft.leutnant;
+    this.scouts = mannschaft.scouts;
   }
   
   macheMobil(gattung) {
